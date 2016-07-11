@@ -17,8 +17,12 @@ public class App {
 			JSONArray array = (JSONArray) object;
 			for (Object o : array) {
 				JSONObject record = (JSONObject) o;
+				JSONObject message = (JSONObject) record.get("message");
+				String proxCard = (String) message.get("proxCard");
+				String zone = (String) message.get("zone");
+				String datetime = (String) message.get("datetime");
+				Integer floor = Integer.parseInt((String) message.get("floor"));
 				Double offset = (Double) record.get("offset");
-				System.out.println(offset);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
