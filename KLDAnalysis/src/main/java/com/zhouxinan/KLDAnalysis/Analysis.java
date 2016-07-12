@@ -7,11 +7,6 @@ import java.util.List;
 public class Analysis {
 	Dao dao = Dao.getInstance();
 
-	public List<ProxSensorData> getProxSensorDataListOfProxCard(String proxCard) throws SQLException {
-		Dao dao = Dao.getInstance();
-		return dao.selectAllProxSensorDataOfProxCard(proxCard);
-	}
-
 	public void analyzeDailyDataForPerson() throws SQLException {
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
@@ -20,11 +15,10 @@ public class Analysis {
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
 				List<ProxSensorData> psdList = dao.selectByDateAndProxCard(proxCard, date);
-				System.out.println("length: " + psdList.size());
 				Iterator<ProxSensorData> iterator3 = psdList.iterator();
 				ProxSensorData proxSensorData = (ProxSensorData) iterator3.next();
-				Double offset = proxSensorData.getOffset();
-				Double firstOffset = offset;
+				Double firstOffset = proxSensorData.getOffset();
+				Double offset = firstOffset;
 				Integer floor = proxSensorData.getFloor();
 				String zone = proxSensorData.getZone();
 				while (iterator3.hasNext()) {
@@ -36,7 +30,7 @@ public class Analysis {
 					zone = currentPsd.getZone();
 				}
 				Double durationOfDay = offset - firstOffset;
-				dao.calculateProbabilityForDay(date, durationOfDay);
+				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
 			}
 		}
 	}

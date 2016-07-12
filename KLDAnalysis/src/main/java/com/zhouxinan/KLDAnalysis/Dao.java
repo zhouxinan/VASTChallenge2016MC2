@@ -210,14 +210,15 @@ public class Dao {
 		}
 	}
 
-	public void calculateProbabilityForDay(String date, Double durationOfDay) throws SQLException {
+	public void calculateProbabilityForDayAndPerson(String proxCard, String date, Double durationOfDay)
+			throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
 			String sql = "UPDATE daily_data SET probability=duration/" + durationOfDay + " WHERE `datetime` between '"
-					+ date + " 00:00:00' and '" + date + " 23:59:59';";
+					+ date + " 00:00:00' and '" + date + " 23:59:59' and proxCard = '" + proxCard + "';";
 			sm.executeUpdate(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
