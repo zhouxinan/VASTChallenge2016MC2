@@ -4,17 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.json.simple.parser.ParseException;
+
 public class Run {
-	public static void main(String[] args) throws FileNotFoundException, SQLException {
+	public static void main(String[] args) throws SQLException, FileNotFoundException, IOException, ParseException {
 		JSONToMySQL jsonToMySQL = new JSONToMySQL();
-		try {
-			jsonToMySQL.importTable();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		jsonToMySQL.importTable();
 	}
 }
