@@ -123,4 +123,32 @@ public class Dao {
 		}
 		return null;
 	}
+	
+	public List<String> selectDistinctDateOfProxCard(String proxCard) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "select distinct date(datetime) as date from prox_sensor_data where proxCard = '" + proxCard + "';";
+			results = sm.executeQuery(sql);
+			List<String> dateList = new LinkedList<String>();
+			while (results.next()) {
+				dateList.add(results.getString("date"));
+			}
+			return dateList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }
