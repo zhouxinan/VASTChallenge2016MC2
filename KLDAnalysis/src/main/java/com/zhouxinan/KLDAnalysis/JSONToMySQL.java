@@ -3,14 +3,16 @@ package com.zhouxinan.KLDAnalysis;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class App {
-	public static void main(String[] args) {
+public class JSONToMySQL {
+	public void importTable() throws IOException, SQLException {
+		Dao dao = Dao.getInstance();
 		JSONParser parser = new JSONParser();
 		try {
 			Object object = parser.parse(new FileReader("json/proxOut-MC2.json"));
@@ -23,6 +25,7 @@ public class App {
 				String datetime = (String) message.get("datetime");
 				Integer floor = Integer.parseInt((String) message.get("floor"));
 				Double offset = (Double) record.get("offset");
+				dao.insertRowToTable(proxCard, zone, datetime, floor, 1, offset);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -34,6 +37,5 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 }
