@@ -7,42 +7,19 @@ import java.util.List;
 public class Analysis {
 	Dao dao = Dao.getInstance();
 
-	public List<String> getAllProxCard() throws SQLException {
-		Dao dao = Dao.getInstance();
-		return dao.selectAllProxCard();
-	}
-
 	public List<ProxSensorData> getProxSensorDataListOfProxCard(String proxCard) throws SQLException {
 		Dao dao = Dao.getInstance();
 		return dao.selectAllProxSensorDataOfProxCard(proxCard);
 	}
 
-	public List<String> getDistinctDateOfProxCard(String proxCard) throws SQLException {
-		Dao dao = Dao.getInstance();
-		return dao.selectDistinctDateOfProxCard(proxCard);
-	}
-
-	public List<ProxSensorData> getProxSensorDataListByDateAndProxCard(String proxCard, String date)
-			throws SQLException {
-		Dao dao = Dao.getInstance();
-		return dao.selectByDateAndProxCard(proxCard, date);
-	}
-
-	public void insertToAnalysisTable(String proxCard, String zone, String date, Integer floor, Double duration)
-			throws SQLException {
-		Dao dao = Dao.getInstance();
-		dao.insertToAnalysisTable(proxCard, zone, date, floor, duration);
-	}
-
-	public void analyze() throws SQLException {
-		List<String> proxCardList = getAllProxCard();
+	public void analyzeDailyDataForPerson() throws SQLException {
+		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
-			// String proxCard = "vawelon";
-			List<String> dateList = getDistinctDateOfProxCard(proxCard);
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
-				List<ProxSensorData> psdList = getProxSensorDataListByDateAndProxCard(proxCard, date);
+				List<ProxSensorData> psdList = dao.selectByDateAndProxCard(proxCard, date);
 				System.out.println("length: " + psdList.size());
 				Iterator<ProxSensorData> iterator3 = psdList.iterator();
 				ProxSensorData proxSensorData = (ProxSensorData) iterator3.next();
@@ -53,14 +30,13 @@ public class Analysis {
 				while (iterator3.hasNext()) {
 					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
 					Double duration = currentPsd.getOffset() - offset;
-					insertToAnalysisTable(proxCard, zone, date, floor, duration);
+					dao.insertToAnalysisTable(proxCard, zone, date, floor, duration);
 					offset = currentPsd.getOffset();
 					floor = currentPsd.getFloor();
 					zone = currentPsd.getZone();
 				}
 				Double durationOfDay = offset - firstOffset;
 				dao.calculateProbabilityForDay(date, durationOfDay);
-
 			}
 		}
 	}
