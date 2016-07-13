@@ -46,9 +46,9 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					System.out.println("date1: " + date + " date2: " + date2 + " KLD: "
-							+ Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
+					System.out.print(Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0 + "\t");
 				}
+				System.out.println();
 			}
 			System.out.println("===================");
 		}
