@@ -7,6 +7,6 @@ public class RunAnalysis {
 		Analysis analysis = new Analysis();
 //		analysis.analyzeDailyDataForPerson();
 //		analysis.calculateKLD();
-		analysis.calculateKLDInnerJoin();
+		analysis.calculateKLDPerDepartment();
 	}
 }

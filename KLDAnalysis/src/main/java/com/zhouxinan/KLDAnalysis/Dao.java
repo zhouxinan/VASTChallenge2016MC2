@@ -299,4 +299,120 @@ public class Dao {
 		}
 		return null;
 	}
+
+	public List<String> selectAllDepartments() throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT DISTINCT department from employee;";
+			results = sm.executeQuery(sql);
+			List<String> departmentList = new LinkedList<String>();
+			while (results.next()) {
+				departmentList.add(results.getString("department"));
+			}
+			return departmentList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
+	public List<String> selectAllEmployeesOfDepartment(String department) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT * from employee where department = '" + department + "'";
+			results = sm.executeQuery(sql);
+			List<String> employeeList = new LinkedList<String>();
+			while (results.next()) {
+				employeeList.add(results.getString("name"));
+			}
+			return employeeList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
+	public List<String> selectDistinctDateForDepartment(String department) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT distinct date(datetime) as date from employee inner join daily_data on daily_data.proxCard = employee.name where department = '"
+					+ department + "'";
+			results = sm.executeQuery(sql);
+			List<String> dateList = new LinkedList<String>();
+			while (results.next()) {
+				dateList.add(results.getString("date"));
+			}
+			return dateList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
+	public Double selectKLDOfTwoEmployeesOfDateInnerJoin(String employee1, String employee2, String date)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(B.probability))) as KLD from ((SELECT * from daily_data where datetime='"
+					+ date + " 00:00:00' and proxCard = '" + employee1
+					+ "') as A INNER JOIN (SELECT * from daily_data where datetime='" + date
+					+ " 00:00:00' and proxCard = '" + employee2 + "') as B ON A.floor = B.floor and A.zone = B.zone)";
+			results = sm.executeQuery(sql);
+			if (results.next()) {
+				return results.getDouble("KLD");
+			}
+			return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }
