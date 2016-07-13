@@ -244,11 +244,11 @@ public class Dao {
 					+ date1 + " 00:00:00' and proxCard = '" + proxCard
 					+ "') as A LEFT JOIN (SELECT * from daily_data where datetime='" + date2
 					+ " 00:00:00' and proxCard = '" + proxCard
-					+ "') as B on A.floor = B.floor and A.zone = B.zone and A.proxCard = B.proxCard) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
+					+ "') as B on A.floor = B.floor and A.zone = B.zone) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
 					+ date1 + " 00:00:00' and proxCard = '" + proxCard
 					+ "') as A RIGHT JOIN (SELECT * from daily_data where datetime='" + date2
 					+ " 00:00:00' and proxCard = '" + proxCard
-					+ "') as B on A.floor = B.floor and A.zone = B.zone and A.proxCard = B.proxCard)) as C";
+					+ "') as B on A.floor = B.floor and A.zone = B.zone)) as C";
 			results = sm.executeQuery(sql);
 			if (results.next()) {
 				return results.getDouble("KLD");
