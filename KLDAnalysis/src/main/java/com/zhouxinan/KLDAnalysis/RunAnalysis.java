@@ -6,6 +6,7 @@ public class RunAnalysis {
 	public static void main(String[] args) throws SQLException {
 		Analysis analysis = new Analysis();
 //		analysis.analyzeDailyDataForPerson();
-		analysis.calculateKLD();
+//		analysis.calculateKLD();
+		analysis.calculateKLDInnerJoin();
 	}
 }

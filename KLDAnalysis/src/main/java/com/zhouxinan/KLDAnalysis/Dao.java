@@ -267,4 +267,36 @@ public class Dao {
 		}
 		return null;
 	}
+
+	public Double selectKLDOfTwoDatesOfProxCardInnerJoin(String proxCard, String date1, String date2)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT SUM(KLDi) as KLD from (SELECT A.probability*(log2(A.probability)-log2(B.probability)) as KLDi from ((SELECT * from daily_data where datetime='"
+					+ date1 + " 00:00:00' and proxCard = '" + proxCard
+					+ "') as A INNER JOIN (SELECT * from daily_data where datetime='" + date2
+					+ " 00:00:00' and proxCard = '" + proxCard
+					+ "') as B on A.floor = B.floor and A.zone = B.zone)) as C";
+			results = sm.executeQuery(sql);
+			if (results.next()) {
+				return results.getDouble("KLD");
+			}
+			return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }

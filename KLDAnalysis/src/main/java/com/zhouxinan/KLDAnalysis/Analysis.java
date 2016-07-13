@@ -53,5 +53,24 @@ public class Analysis {
 			System.out.println("===================");
 		}
 	}
+	
+	public void calculateKLDInnerJoin() throws SQLException {
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			System.out.println("current proxCard: " + proxCard);
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+					String date2 = (String) iterator3.next();
+					System.out.print(Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0) / 100.0 + "\t");
+				}
+				System.out.println();
+			}
+			System.out.println("===================");
+		}
+	}
 
 }
