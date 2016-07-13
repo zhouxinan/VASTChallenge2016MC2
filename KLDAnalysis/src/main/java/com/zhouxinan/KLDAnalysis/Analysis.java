@@ -35,4 +35,23 @@ public class Analysis {
 		}
 	}
 
+	public void calculateKLD() throws SQLException {
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			System.out.println("current proxCard: " + proxCard);
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+					String date2 = (String) iterator3.next();
+					System.out.println("date1: " + date + " date2: " + date2 + " KLD: "
+							+ Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
+				}
+			}
+			System.out.println("===================");
+		}
+	}
+
 }

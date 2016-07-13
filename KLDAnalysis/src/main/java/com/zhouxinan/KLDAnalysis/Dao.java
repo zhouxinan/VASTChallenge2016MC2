@@ -232,4 +232,39 @@ public class Dao {
 			}
 		}
 	}
+
+	public Double selectKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT SUM(KLDi) as KLD from (SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
+					+ date1 + " 00:00:00' and proxCard = '" + proxCard
+					+ "') as A LEFT JOIN (SELECT * from daily_data where datetime='" + date2
+					+ " 00:00:00' and proxCard = '" + proxCard
+					+ "') as B on A.floor = B.floor and A.zone = B.zone and A.proxCard = B.proxCard) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
+					+ date1 + " 00:00:00' and proxCard = '" + proxCard
+					+ "') as A RIGHT JOIN (SELECT * from daily_data where datetime='" + date2
+					+ " 00:00:00' and proxCard = '" + proxCard
+					+ "') as B on A.floor = B.floor and A.zone = B.zone and A.proxCard = B.proxCard)) as C";
+			results = sm.executeQuery(sql);
+			if (results.next()) {
+				return results.getDouble("KLD");
+			}
+			return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }

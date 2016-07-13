@@ -16,8 +16,18 @@ public class ProxSensorData {
     private Integer type;
 
     private Double offset;
+    
+    private Double probability;
 
-    public Integer getProxSensorDataId() {
+    public Double getProbability() {
+		return probability;
+	}
+
+	public void setProbability(Double probability) {
+		this.probability = probability;
+	}
+
+	public Integer getProxSensorDataId() {
         return proxSensorDataId;
     }
 
