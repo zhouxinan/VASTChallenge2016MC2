@@ -6,8 +6,8 @@ import java.sql.SQLException;
 public class RunAnalysis {
 	public static void main(String[] args) throws SQLException, IOException {
 		Analysis analysis = new Analysis();
-//		analysis.analyzeDailyDataForPerson();
-//		analysis.calculateKLD();
-		analysis.calculateKLDPerDepartment();
+		analysis.calculateDailyDataForPerson();
+//		analysis.calculateKLDPerPerson();
+//		analysis.calculateKLDPerDepartment();
 	}
 }

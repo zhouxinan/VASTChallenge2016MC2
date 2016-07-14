@@ -363,8 +363,8 @@ public class Dao {
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "SELECT distinct date(datetime) as date from employee inner join daily_data on daily_data.proxCard = employee.name where department = '"
-					+ department + "'";
+			String sql = "SELECT distinct date(datetime) as date from ((SELECT * from employee where department = '"
+					+ department + "') as A inner join daily_data on daily_data.proxCard = A.name)";
 			results = sm.executeQuery(sql);
 			List<String> dateList = new LinkedList<String>();
 			while (results.next()) {
