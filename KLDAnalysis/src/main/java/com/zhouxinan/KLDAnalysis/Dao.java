@@ -385,6 +385,36 @@ public class Dao {
 		return null;
 	}
 
+	public Double selectKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(IFNULL(B.probability,0.00000001)))) as KLD from ((SELECT * from daily_data where datetime='"
+					+ date + " 00:00:00' and proxCard = '" + employee1
+					+ "') as A LEFT JOIN (SELECT * from daily_data where datetime='" + date
+					+ " 00:00:00' and proxCard = '" + employee2 + "') as B ON A.floor = B.floor and A.zone = B.zone)";
+			results = sm.executeQuery(sql);
+			if (results.next()) {
+				return results.getDouble("KLD");
+			}
+			return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
 	public Double selectKLDOfTwoEmployeesOfDateInnerJoin(String employee1, String employee2, String date)
 			throws SQLException {
 		Connection con = null;

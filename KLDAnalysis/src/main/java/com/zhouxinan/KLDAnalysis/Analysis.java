@@ -1,8 +1,16 @@
 package com.zhouxinan.KLDAnalysis;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
+import com.google.gson.Gson;
 
 public class Analysis {
 	Dao dao = Dao.getInstance();
@@ -35,73 +43,145 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLD() throws SQLException {
+	public void calculateKLD() throws SQLException, FileNotFoundException {
+		Gson gson = new Gson();
+		File file = new File("EmployeeByDayComparisonsApprox.json");
+		PrintWriter printWriter = new PrintWriter(file);
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
-			System.out.println("current proxCard: " + proxCard);
+			printWriter.print("\"" + proxCard + "\" : {\n");
 			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			String json = gson.toJson(dateList);
+			printWriter.print("\"dates\" : ");
+			printWriter.print(json + ",\n");
+			printWriter.print("\"matrix\" : \n");
+			List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
+				List<Double> matrixRow = new ArrayList<Double>();
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					System.out
-							.print(Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0
-									+ "\t");
+					matrixRow.add(Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0)
+									/ 100.0);
 				}
-				System.out.println();
+				matrixRowList.add(matrixRow);
 			}
-			System.out.println("===================");
+			printWriter.println(gson.toJson(matrixRowList) + "},");
 		}
+		printWriter.close();
 	}
 
-	public void calculateKLDInnerJoin() throws SQLException {
+	public void calculateKLDInnerJoin() throws SQLException, FileNotFoundException {
+		Gson gson = new Gson();
+		File file = new File("EmployeeByDayComparisons.json");
+		PrintWriter printWriter = new PrintWriter(file);
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
-			System.out.println("current proxCard: " + proxCard);
+			printWriter.print("\"" + proxCard + "\" : {\n");
 			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			String json = gson.toJson(dateList);
+			printWriter.print("\"dates\" : ");
+			printWriter.print(json + ",\n");
+			printWriter.print("\"matrix\" : \n");
+			List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
+				List<Double> matrixRow = new ArrayList<Double>();
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					System.out
-							.print(Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
-									/ 100.0 + "\t");
+					matrixRow.add(Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
+									/ 100.0);
 				}
-				System.out.println();
+				matrixRowList.add(matrixRow);
 			}
-			System.out.println("===================");
+			printWriter.println(gson.toJson(matrixRowList) + "},");
 		}
+		printWriter.close();
 	}
 
-	public void calculateKLDPerDepartment() throws SQLException {
+	public void calculateKLDPerDepartmentInnerJoin() throws SQLException, IOException {
+		Gson gson = new Gson();
+		File file = new File("DepartmentComparisons.json");
+		PrintWriter printWriter = new PrintWriter(file);
 		List<String> departmentList = dao.selectAllDepartments();
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
 			String department = (String) iterator.next();
-			System.out.println("current department: " + department);
+			printWriter.print("\"" + department + "\" : {\n");
+			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
+			String json = gson.toJson(employeeList);
+			printWriter.print("\"employees\" : ");
+			printWriter.print(json + ",\n");
+			printWriter.print("\"dates\" : {\n");
 			List<String> dateList = dao.selectDistinctDateForDepartment(department);
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
-				System.out.println("current date: " + date);
-				List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
-				for (Iterator<String> iterator3 = employeeList.iterator(); iterator3.hasNext();) {
+				printWriter.println("\"" + date + "\" : ");
+				List<String> employeeList1 = new LinkedList<String>(employeeList);
+				List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
 					String employee1 = (String) iterator3.next();
-					List<String> employeeList2 = dao.selectAllEmployeesOfDepartment(department);
+					List<Double> matrixRow = new ArrayList<Double>();
+					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						System.out.print(Math.round(
-								dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0) / 100.0
-								+ "\t");
+						matrixRow.add(Math
+								.round(dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
+								/ 100.0);
 					}
-					System.out.println();
+					matrixRowList.add(matrixRow);
 				}
-				System.out.println("===================");
+				printWriter.print(gson.toJson(matrixRowList));
+				if (iterator2.hasNext()) {
+					printWriter.println(",");
+				}
 			}
-			System.out.println("~~~~~~~~~~~~~~~~~~~~");
+			printWriter.println("}},");
 		}
+		printWriter.close();
 	}
-
+	
+	public void calculateKLDPerDepartment() throws SQLException, IOException {
+		Gson gson = new Gson();
+		File file = new File("DepartmentComparisonsApprox.json");
+		PrintWriter printWriter = new PrintWriter(file);
+		List<String> departmentList = dao.selectAllDepartments();
+		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
+			String department = (String) iterator.next();
+			printWriter.print("\"" + department + "\" : {\n");
+			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
+			String json = gson.toJson(employeeList);
+			printWriter.print("\"employees\" : ");
+			printWriter.print(json + ",\n");
+			printWriter.print("\"dates\" : {\n");
+			List<String> dateList = dao.selectDistinctDateForDepartment(department);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				printWriter.println("\"" + date + "\" : ");
+				List<String> employeeList1 = new LinkedList<String>(employeeList);
+				List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
+					String employee1 = (String) iterator3.next();
+					List<Double> matrixRow = new ArrayList<Double>();
+					List<String> employeeList2 = new LinkedList<String>(employeeList);
+					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
+						String employee2 = (String) iterator4.next();
+						matrixRow.add(Math
+								.round(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
+								/ 100.0);
+					}
+					matrixRowList.add(matrixRow);
+				}
+				printWriter.print(gson.toJson(matrixRowList));
+				if (iterator2.hasNext()) {
+					printWriter.println(",");
+				}
+			}
+			printWriter.println("}},");
+		}
+		printWriter.close();
+	}
 }
