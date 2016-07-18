@@ -192,4 +192,47 @@ public class Analysis {
 		}
 		printWriter.close();
 	}
+
+	public void calculateKLDOfSortedHistogramPerDepartment() throws SQLException, IOException {
+		Gson gson = new Gson();
+		File file = new File("DepartmentComparisonsSorted.json");
+		PrintWriter printWriter = new PrintWriter(file);
+		List<String> departmentList = dao.selectAllDepartments();
+		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
+			String department = (String) iterator.next();
+			printWriter.print("\"" + department + "\" : {\n");
+			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
+			String employeeListJson = gson.toJson(employeeList);
+			printWriter.print("\"employees\" : " + employeeListJson + ",\n");
+			printWriter.print("\"dates\" : {\n");
+			List<String> dateList = dao.selectDistinctDateForDepartment(department);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				printWriter.println("\"" + date + "\" : ");
+				List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+				List<String> employeeList1 = new LinkedList<String>(employeeList);
+				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
+					String employee1 = (String) iterator3.next();
+					List<Double> matrixRow = new ArrayList<Double>();
+					List<String> employeeList2 = new LinkedList<String>(employeeList);
+					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
+						String employee2 = (String) iterator4.next();
+						matrixRow.add(Math.round(
+								dao.selectSortedKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
+								/ 100.0);
+					}
+					matrixRowList.add(matrixRow);
+				}
+				printWriter.print(gson.toJson(matrixRowList));
+				if (iterator2.hasNext()) {
+					printWriter.println(",");
+				}
+			}
+			printWriter.println("}}");
+			if (iterator.hasNext()) {
+				printWriter.println(",");
+			}
+		}
+		printWriter.close();
+	}
 }
