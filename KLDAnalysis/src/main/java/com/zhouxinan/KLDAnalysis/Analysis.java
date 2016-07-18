@@ -107,6 +107,39 @@ public class Analysis {
 		}
 		printWriter.close();
 	}
+	
+	public void calculateKLDOfSortedHistogramPerPerson() throws SQLException, FileNotFoundException {
+		Gson gson = new Gson();
+		File file = new File("EmployeeByDayComparisonsSorted.json");
+		PrintWriter printWriter = new PrintWriter(file);
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			printWriter.print("\"" + proxCard + "\" : {\n");
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			String dateListJson = gson.toJson(dateList);
+			printWriter.print("\"dates\" : ");
+			printWriter.print(dateListJson + ",\n");
+			printWriter.print("\"matrix\" : \n");
+			List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				List<Double> matrixRow = new ArrayList<Double>();
+				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+					String date2 = (String) iterator3.next();
+					matrixRow.add(Math.round(dao.selectSortedKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0)
+							/ 100.0);
+				}
+				matrixRowList.add(matrixRow);
+			}
+			printWriter.println(gson.toJson(matrixRowList) + "}");
+			if (iterator.hasNext()) {
+				printWriter.println(",");
+			}
+		}
+		printWriter.close();
+	}
 
 	public void calculateKLDPerDepartmentInnerJoin() throws SQLException, IOException {
 		Gson gson = new Gson();

@@ -489,4 +489,48 @@ public class Dao {
 		}
 		return null;
 	}
+	
+	public Double selectSortedKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql1 = "SELECT * from daily_data where datetime='" + date1 + " 00:00:00' and proxCard = '" + proxCard
+					+ "' ORDER BY duration DESC";
+			results = sm.executeQuery(sql1);
+			List<Double> list1 = new LinkedList<Double>();
+			while (results.next()) {
+				list1.add(results.getDouble("probability"));
+			}
+			results.close();
+			String sql2 = "SELECT * from daily_data where datetime='" + date2 + " 00:00:00' and proxCard = '" + proxCard
+					+ "' ORDER BY duration DESC";
+			results = sm.executeQuery(sql2);
+			List<Double> list2 = new LinkedList<Double>();
+			while (results.next()) {
+				list2.add(results.getDouble("probability"));
+			}
+			results.close();
+			Double KLD = 0.0;
+			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
+			for (int i = 0; i < smallerListSize; i++) {
+				KLD += list1.get(i) * ((Math.log(list1.get(i)) - Math.log(list2.get(i))) / Math.log(2));
+			}
+			return KLD;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }
