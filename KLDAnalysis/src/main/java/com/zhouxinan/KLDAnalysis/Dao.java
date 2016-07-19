@@ -153,7 +153,7 @@ public class Dao {
 		return null;
 	}
 
-	public List<ProxSensorData> selectByDateAndProxCard(String proxCard, String date) throws SQLException {
+	public List<ProxSensorData> selectByProxCardAndDate(String proxCard, String date) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;

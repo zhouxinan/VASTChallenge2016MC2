@@ -15,14 +15,21 @@ import com.google.gson.Gson;
 public class Analysis {
 	Dao dao = Dao.getInstance();
 
-	public void calculateDailyDataForPerson() throws SQLException {
+	public void buildDailyDataTable() throws SQLException {
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
 			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
-				List<ProxSensorData> psdList = dao.selectByDateAndProxCard(proxCard, date);
+				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date);
+				/*
+				 * The following 3 lines of code run with no result, which
+				 * proves the validity of the following algorithm.
+				 */
+				// if (psdList.size() == 1) {
+				// System.out.println(date + proxCard);
+				// }
 				Iterator<ProxSensorData> iterator3 = psdList.iterator();
 				ProxSensorData proxSensorData = (ProxSensorData) iterator3.next();
 				Double firstOffset = proxSensorData.getOffset();
