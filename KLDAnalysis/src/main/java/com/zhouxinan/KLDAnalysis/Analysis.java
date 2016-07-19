@@ -97,7 +97,7 @@ public class Analysis {
 
 	public void calculateKLDOfSortedHistogramPerPerson() throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
-		File file = new File("EmployeeByDayComparisonsSorted.json");
+		File file = new File("EmployeeByDayComparisonsSortedHistogram.json");
 		PrintWriter printWriter = new PrintWriter(file);
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
@@ -116,7 +116,7 @@ public class Analysis {
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
 					matrixRow.add(
-							Math.round(dao.selectSortedKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
+							Math.round(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5) * 100.0) / 100.0);
 				}
 				matrixRowList.add(matrixRow);
 			}
