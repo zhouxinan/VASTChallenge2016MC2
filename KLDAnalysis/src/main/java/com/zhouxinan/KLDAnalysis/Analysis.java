@@ -141,7 +141,7 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void sortAverageKLDPerDayPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
+	public void calculateAverageKLDPerDayPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
@@ -171,52 +171,15 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLDPerDepartmentInnerJoin() throws SQLException, IOException {
+	public void calculateKLDPerDepartment(boolean isInnerJoin) throws SQLException, IOException {
 		Gson gson = new Gson();
-		File file = new File("DepartmentComparisons.json");
-		PrintWriter printWriter = new PrintWriter(file);
-		List<String> departmentList = dao.selectAllDepartments();
-		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
-			String department = (String) iterator.next();
-			printWriter.print("\"" + department + "\" : {\n");
-			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
-			String employeeListJson = gson.toJson(employeeList);
-			printWriter.print("\"employees\" : " + employeeListJson + ",\n");
-			printWriter.print("\"dates\" : {\n");
-			List<String> dateList = dao.selectDistinctDateForDepartment(department);
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				printWriter.println("\"" + date + "\" : ");
-				List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
-				List<String> employeeList1 = new LinkedList<String>(employeeList);
-				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
-					String employee1 = (String) iterator3.next();
-					List<Double> matrixRow = new ArrayList<Double>();
-					List<String> employeeList2 = new LinkedList<String>(employeeList);
-					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
-						String employee2 = (String) iterator4.next();
-						matrixRow.add(Math
-								.round(dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
-								/ 100.0);
-					}
-					matrixRowList.add(matrixRow);
-				}
-				printWriter.print(gson.toJson(matrixRowList));
-				if (iterator2.hasNext()) {
-					printWriter.println(",");
-				}
-			}
-			printWriter.println("}}");
-			if (iterator.hasNext()) {
-				printWriter.println(",");
-			}
+		String fileName;
+		if (isInnerJoin) {
+			fileName = "DepartmentComparisons.json";
+		} else {
+			fileName = "DepartmentComparisonsApprox.json";
 		}
-		printWriter.close();
-	}
-
-	public void calculateKLDPerDepartment() throws SQLException, IOException {
-		Gson gson = new Gson();
-		File file = new File("DepartmentComparisonsApprox.json");
+		File file = new File(fileName);
 		PrintWriter printWriter = new PrintWriter(file);
 		List<String> departmentList = dao.selectAllDepartments();
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
@@ -238,8 +201,16 @@ public class Analysis {
 					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						matrixRow.add(Math.round(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
-								/ 100.0);
+						if (isInnerJoin) {
+							matrixRow.add(Math.round(
+									dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
+									/ 100.0);
+						} else {
+							matrixRow.add(
+									Math.round(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
+											/ 100.0);
+						}
+
 					}
 					matrixRowList.add(matrixRow);
 				}
