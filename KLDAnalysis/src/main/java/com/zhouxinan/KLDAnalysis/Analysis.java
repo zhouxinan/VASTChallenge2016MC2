@@ -115,8 +115,9 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					matrixRow.add(
-							Math.round(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5) * 100.0) / 100.0);
+					matrixRow.add(Math
+							.round(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5) * 100.0)
+							/ 100.0);
 				}
 				matrixRowList.add(matrixRow);
 			}
@@ -140,20 +141,17 @@ public class Analysis {
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
 					if (isInnerJoin) {
-						average += Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
-								/ 100.0;
+						average += dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2);
 					} else {
-						average += Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0;
+						average += dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2);
 					}
 				}
 				average /= dateList2.size() - 1;
-				System.out.println("proxCard: " + proxCard + " date: " + date + " average: " + average);
 				if (isInnerJoin) {
 					dao.insertToSortedAverage("sorted_average_2", proxCard, date, average);
 				} else {
 					dao.insertToSortedAverage("sorted_average", proxCard, date, average);
 				}
-
 			}
 		}
 	}
