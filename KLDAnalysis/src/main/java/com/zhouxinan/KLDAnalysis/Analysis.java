@@ -84,7 +84,6 @@ public class Analysis {
 						matrixRow.add(
 								Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
 					}
-
 				}
 				matrixRowList.add(matrixRow);
 			}

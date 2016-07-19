@@ -276,11 +276,10 @@ public class Dao {
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "SELECT SUM(KLDi) as KLD from (SELECT A.probability*(log2(A.probability)-log2(B.probability)) as KLDi from ((SELECT * from daily_data where datetime='"
+			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(B.probability))) as KLD from ((SELECT * from daily_data where datetime='"
 					+ date1 + " 00:00:00' and proxCard = '" + proxCard
 					+ "') as A INNER JOIN (SELECT * from daily_data where datetime='" + date2
-					+ " 00:00:00' and proxCard = '" + proxCard
-					+ "') as B on A.floor = B.floor and A.zone = B.zone)) as C";
+					+ " 00:00:00' and proxCard = '" + proxCard + "') as B on A.floor = B.floor and A.zone = B.zone)";
 			results = sm.executeQuery(sql);
 			if (results.next()) {
 				return results.getDouble("KLD");
