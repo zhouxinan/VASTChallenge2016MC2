@@ -156,6 +156,25 @@ public class Analysis {
 		}
 	}
 
+	public void calculateAverageKLDOfSortedHistogramPerDayPerPerson() throws SQLException, FileNotFoundException {
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				Double average = 0.0;
+				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+					String date2 = (String) iterator3.next();
+					average += dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5);
+				}
+				average /= dateList2.size() - 1;
+				dao.insertToSortedAverage("sorted_average_3", proxCard, date, average);
+			}
+		}
+	}
+
 	public void calculateKLDPerDepartment(boolean isInnerJoin) throws SQLException, IOException {
 		Gson gson = new Gson();
 		String fileName;
