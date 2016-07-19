@@ -43,41 +43,15 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLDPerPerson() throws SQLException, FileNotFoundException {
+	public void calculateKLDPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
-		File file = new File("EmployeeByDayComparisonsApprox.json");
-		PrintWriter printWriter = new PrintWriter(file);
-		List<String> proxCardList = dao.selectAllProxCard();
-		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
-			String proxCard = (String) iterator.next();
-			printWriter.print("\"" + proxCard + "\" : {\n");
-			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
-			String dateListJson = gson.toJson(dateList);
-			printWriter.print("\"dates\" : ");
-			printWriter.print(dateListJson + ",\n");
-			printWriter.print("\"matrix\" : \n");
-			List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				List<Double> matrixRow = new ArrayList<Double>();
-				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
-				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
-					String date2 = (String) iterator3.next();
-					matrixRow.add(Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
-				}
-				matrixRowList.add(matrixRow);
-			}
-			printWriter.println(gson.toJson(matrixRowList) + "}");
-			if (iterator.hasNext()) {
-				printWriter.println(",");
-			}
+		String fileName;
+		if (isInnerJoin) {
+			fileName = "EmployeeByDayComparisons.json";
+		} else {
+			fileName = "EmployeeByDayComparisonsApprox.json";
 		}
-		printWriter.close();
-	}
-
-	public void calculateKLDPerPersonInnerJoin() throws SQLException, FileNotFoundException {
-		Gson gson = new Gson();
-		File file = new File("EmployeeByDayComparisons.json");
+		File file = new File(fileName);
 		PrintWriter printWriter = new PrintWriter(file);
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
@@ -95,8 +69,15 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					matrixRow.add(Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
-							/ 100.0);
+					if (isInnerJoin) {
+						matrixRow.add(
+								Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
+										/ 100.0);
+					} else {
+						matrixRow.add(
+								Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
+					}
+
 				}
 				matrixRowList.add(matrixRow);
 			}
