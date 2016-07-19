@@ -391,10 +391,15 @@ public class Dao {
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(IFNULL(B.probability,0.00000001)))) as KLD from ((SELECT * from daily_data where datetime='"
+			String sql = "SELECT SUM(KLDi) as KLD from (SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
 					+ date + " 00:00:00' and proxCard = '" + employee1
 					+ "') as A LEFT JOIN (SELECT * from daily_data where datetime='" + date
-					+ " 00:00:00' and proxCard = '" + employee2 + "') as B ON A.floor = B.floor and A.zone = B.zone)";
+					+ " 00:00:00' and proxCard = '" + employee2
+					+ "') as B on A.floor = B.floor and A.zone = B.zone) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
+					+ date + " 00:00:00' and proxCard = '" + employee1
+					+ "') as A RIGHT JOIN (SELECT * from daily_data where datetime='" + date
+					+ " 00:00:00' and proxCard = '" + employee2
+					+ "') as B on A.floor = B.floor and A.zone = B.zone)) as C";
 			results = sm.executeQuery(sql);
 			if (results.next()) {
 				return results.getDouble("KLD");
@@ -445,7 +450,7 @@ public class Dao {
 		return null;
 	}
 
-	public Double selectSortedKLDOfTwoEmployeesOfDateInnerJoin(String employee1, String employee2, String date)
+	public Double selectSortedKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date)
 			throws SQLException {
 		Connection con = null;
 		Statement sm = null;

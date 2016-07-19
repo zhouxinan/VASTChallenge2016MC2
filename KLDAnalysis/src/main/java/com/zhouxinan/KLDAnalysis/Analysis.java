@@ -233,7 +233,7 @@ public class Analysis {
 
 	public void calculateKLDOfSortedHistogramPerDepartment() throws SQLException, IOException {
 		Gson gson = new Gson();
-		File file = new File("DepartmentComparisonsSorted.json");
+		File file = new File("DepartmentComparisonsSortedHistogram.json");
 		PrintWriter printWriter = new PrintWriter(file);
 		List<String> departmentList = dao.selectAllDepartments();
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
@@ -256,7 +256,7 @@ public class Analysis {
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
 						matrixRow.add(Math.round(
-								dao.selectSortedKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
+								dao.selectSortedKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
 								/ 100.0);
 					}
 					matrixRowList.add(matrixRow);
