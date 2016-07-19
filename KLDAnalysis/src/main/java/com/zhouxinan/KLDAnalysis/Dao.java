@@ -489,9 +489,8 @@ public class Dao {
 		}
 		return null;
 	}
-	
-	public Double selectSortedKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2)
-			throws SQLException {
+
+	public Double selectSortedKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
@@ -532,5 +531,27 @@ public class Dao {
 			}
 		}
 		return null;
+	}
+
+	public void insertToSortedAverage(String table, String proxCard, String date, Double average) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "insert into " + table + "(proxCard, datetime, average) values('" + proxCard + "', '" + date
+					+ " 00:00:00', '" + average + "')";
+			sm.executeUpdate(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
 	}
 }

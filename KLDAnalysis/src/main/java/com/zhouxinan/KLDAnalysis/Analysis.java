@@ -107,7 +107,7 @@ public class Analysis {
 		}
 		printWriter.close();
 	}
-	
+
 	public void calculateKLDOfSortedHistogramPerPerson() throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
 		File file = new File("EmployeeByDayComparisonsSorted.json");
@@ -128,8 +128,8 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					matrixRow.add(Math.round(dao.selectSortedKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0)
-							/ 100.0);
+					matrixRow.add(
+							Math.round(dao.selectSortedKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
 				}
 				matrixRowList.add(matrixRow);
 			}
@@ -139,6 +139,36 @@ public class Analysis {
 			}
 		}
 		printWriter.close();
+	}
+
+	public void sortAverageKLDPerDayPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				Double average = 0.0;
+				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+					String date2 = (String) iterator3.next();
+					if (isInnerJoin) {
+						average += Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
+								/ 100.0;
+					} else {
+						average += Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0;
+					}
+				}
+				average /= dateList2.size() - 1;
+				System.out.println("proxCard: " + proxCard + " date: " + date + " average: " + average);
+				if (isInnerJoin) {
+					dao.insertToSortedAverage("sorted_average_2", proxCard, date, average);
+				} else {
+					dao.insertToSortedAverage("sorted_average", proxCard, date, average);
+				}
+
+			}
+		}
 	}
 
 	public void calculateKLDPerDepartmentInnerJoin() throws SQLException, IOException {
