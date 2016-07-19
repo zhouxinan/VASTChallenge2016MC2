@@ -450,7 +450,7 @@ public class Dao {
 		return null;
 	}
 
-	public Double selectSortedKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date)
+	public Double selectSortedHistogramKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date, int listSizeLimit)
 			throws SQLException {
 		Connection con = null;
 		Statement sm = null;
@@ -476,6 +476,9 @@ public class Dao {
 			results.close();
 			Double KLD = 0.0;
 			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
+			if (smallerListSize > listSizeLimit) {
+				smallerListSize = listSizeLimit;
+			}
 			for (int i = 0; i < smallerListSize; i++) {
 				KLD += list1.get(i) * ((Math.log(list1.get(i)) - Math.log(list2.get(i))) / Math.log(2));
 			}

@@ -255,8 +255,8 @@ public class Analysis {
 					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						matrixRow.add(Math.round(
-								dao.selectSortedKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
+						matrixRow.add(Math
+								.round(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5) * 100.0)
 								/ 100.0);
 					}
 					matrixRowList.add(matrixRow);
