@@ -305,4 +305,28 @@ public class Analysis {
 			}
 		}
 	}
+
+	public void calculateAverageKLDOfSortedHistogramPerDepartment() throws SQLException, IOException {
+		List<String> departmentList = dao.selectAllDepartments();
+		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
+			String department = (String) iterator.next();
+			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
+			List<String> dateList = dao.selectDistinctDateForDepartment(department);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				List<String> employeeList1 = new LinkedList<String>(employeeList);
+				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
+					String employee1 = (String) iterator3.next();
+					Double average = 0.0;
+					List<String> employeeList2 = new LinkedList<String>(employeeList);
+					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
+						String employee2 = (String) iterator4.next();
+						average += dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5);
+					}
+					average /= employeeList.size() - 1;
+					dao.insertToSortedAverage("sorted_average_6", employee1, date, average);
+				}
+			}
+		}
+	}
 }
