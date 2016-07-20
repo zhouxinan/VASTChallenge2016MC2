@@ -329,4 +329,37 @@ public class Analysis {
 			}
 		}
 	}
+
+	public void processMatrixRowList(List<List<Double>> matrixRowList) {
+		for (int i = 0; i < matrixRowList.size(); i++) {
+			for (int j = i + 1; j < matrixRowList.get(i).size(); j++) {
+				Double average = (matrixRowList.get(i).get(j) + matrixRowList.get(j).get(i)) / 2;
+				matrixRowList.get(i).set(j, average);
+				matrixRowList.get(j).set(i, average);
+			}
+		}
+	}
+
+	public void printMatrixRowList(List<List<Double>> matrixRowList) {
+		for (int i = 0; i < matrixRowList.size(); i++) {
+			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
+				System.out.print(matrixRowList.get(i).get(j));
+			}
+			System.out.println();
+		}
+	}
+
+	public void testPrint() {
+		List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+		for (int i = 0; i < 4; i++) {
+			List<Double> matrixRow = new ArrayList<Double>();
+			matrixRow.add(1.0);
+			matrixRow.add(2.0);
+			matrixRow.add(3.0);
+			matrixRow.add(4.0);
+			matrixRowList.add(matrixRow);
+		}
+		processMatrixRowList(matrixRowList);
+		printMatrixRowList(matrixRowList);
+	}
 }
