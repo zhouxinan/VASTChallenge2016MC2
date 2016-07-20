@@ -450,8 +450,8 @@ public class Dao {
 		return null;
 	}
 
-	public Double selectSortedHistogramKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date, int listSizeLimit)
-			throws SQLException {
+	public Double selectSortedHistogramKLDOfTwoEmployeesOfDate(String employee1, String employee2, String date,
+			int listSizeLimit) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
