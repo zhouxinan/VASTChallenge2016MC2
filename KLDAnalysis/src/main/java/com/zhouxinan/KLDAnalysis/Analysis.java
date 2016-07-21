@@ -89,6 +89,11 @@ public class Analysis {
 				makeMatrixSymmetric(matrixRowList);
 			}
 			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
+			if (isInnerJoin) {
+				calculateAveragePerRow2(matrixRowList, "sorted_average_2", proxCard, dateList);
+			} else {
+				calculateAveragePerRow2(matrixRowList, "sorted_average", proxCard, dateList);
+			}
 			if (iterator.hasNext()) {
 				printWriter.println(",");
 			}
@@ -125,6 +130,7 @@ public class Analysis {
 				makeMatrixSymmetric(matrixRowList);
 			}
 			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
+			calculateAveragePerRow2(matrixRowList, "sorted_average_3", proxCard, dateList);
 			if (iterator.hasNext()) {
 				printWriter.println(",");
 			}
