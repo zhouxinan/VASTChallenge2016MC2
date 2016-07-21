@@ -50,7 +50,8 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLDPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
+	public void calculateKLDPerPerson(boolean isInnerJoin, boolean isMatrixSymmetrical)
+			throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
 		String fileName;
 		if (isInnerJoin) {
@@ -77,17 +78,17 @@ public class Analysis {
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
 					if (isInnerJoin) {
-						matrixRow.add(
-								Math.round(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2) * 100.0)
-										/ 100.0);
+						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2));
 					} else {
-						matrixRow.add(
-								Math.round(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2) * 100.0) / 100.0);
+						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2));
 					}
 				}
 				matrixRowList.add(matrixRow);
 			}
-			printWriter.println(gson.toJson(matrixRowList) + "}");
+			if (isMatrixSymmetrical) {
+				makeMatrixSymmetric(matrixRowList);
+			}
+			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
 			if (iterator.hasNext()) {
 				printWriter.println(",");
 			}
@@ -95,7 +96,8 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateKLDOfSortedHistogramPerPerson() throws SQLException, FileNotFoundException {
+	public void calculateKLDOfSortedHistogramPerPerson(boolean isMatrixSymmetrical)
+			throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
 		File file = new File("EmployeeByDayComparisonsSortedHistogram.json");
 		PrintWriter printWriter = new PrintWriter(file);
@@ -115,13 +117,14 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					matrixRow.add(Math
-							.round(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5) * 100.0)
-							/ 100.0);
+					matrixRow.add(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5));
 				}
 				matrixRowList.add(matrixRow);
 			}
-			printWriter.println(gson.toJson(matrixRowList) + "}");
+			if (isMatrixSymmetrical) {
+				makeMatrixSymmetric(matrixRowList);
+			}
+			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
 			if (iterator.hasNext()) {
 				printWriter.println(",");
 			}
@@ -175,7 +178,8 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLDPerDepartment(boolean isInnerJoin) throws SQLException, IOException {
+	public void calculateKLDPerDepartment(boolean isInnerJoin, boolean isMatrixSymmetrical)
+			throws SQLException, IOException {
 		Gson gson = new Gson();
 		String fileName;
 		if (isInnerJoin) {
@@ -206,19 +210,23 @@ public class Analysis {
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
 						if (isInnerJoin) {
-							matrixRow.add(Math.round(
-									dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date) * 100.0)
-									/ 100.0);
+							matrixRow.add(dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date));
 						} else {
-							matrixRow.add(
-									Math.round(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date) * 100.0)
-											/ 100.0);
+							matrixRow.add(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date));
 						}
 
 					}
 					matrixRowList.add(matrixRow);
 				}
-				printWriter.print(gson.toJson(matrixRowList));
+				if (isMatrixSymmetrical) {
+					makeMatrixSymmetric(matrixRowList);
+				}
+				printWriter.print(gson.toJson(roundMatrixRowList(matrixRowList)));
+				if (isInnerJoin) {
+					calculateAveragePerRow(matrixRowList, "sorted_average_5", employeeList1, date);
+				} else {
+					calculateAveragePerRow(matrixRowList, "sorted_average_4", employeeList1, date);
+				}
 				if (iterator2.hasNext()) {
 					printWriter.println(",");
 				}
@@ -231,7 +239,8 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateKLDOfSortedHistogramPerDepartment() throws SQLException, IOException {
+	public void calculateKLDOfSortedHistogramPerDepartment(boolean isMatrixSymmetrical)
+			throws SQLException, IOException {
 		Gson gson = new Gson();
 		File file = new File("DepartmentComparisonsSortedHistogram.json");
 		PrintWriter printWriter = new PrintWriter(file);
@@ -255,13 +264,15 @@ public class Analysis {
 					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						matrixRow.add(Math.round(
-								dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5) * 100.0)
-								/ 100.0);
+						matrixRow.add(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5));
 					}
 					matrixRowList.add(matrixRow);
 				}
-				printWriter.print(gson.toJson(matrixRowList));
+				if (isMatrixSymmetrical) {
+					makeMatrixSymmetric(matrixRowList);
+				}
+				printWriter.print(gson.toJson(roundMatrixRowList(matrixRowList)));
+				calculateAveragePerRow(matrixRowList, "sorted_average_6", employeeList1, date);
 				if (iterator2.hasNext()) {
 					printWriter.println(",");
 				}
@@ -382,5 +393,4 @@ public class Analysis {
 			System.out.println();
 		}
 	}
-
 }
