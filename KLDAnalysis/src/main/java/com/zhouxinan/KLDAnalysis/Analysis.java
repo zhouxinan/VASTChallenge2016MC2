@@ -330,13 +330,37 @@ public class Analysis {
 		}
 	}
 
-	public void processMatrixRowList(List<List<Double>> matrixRowList) {
+	public void makeMatrixSymmetric(List<List<Double>> matrixRowList) {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			for (int j = i + 1; j < matrixRowList.get(i).size(); j++) {
 				Double average = (matrixRowList.get(i).get(j) + matrixRowList.get(j).get(i)) / 2;
 				matrixRowList.get(i).set(j, average);
 				matrixRowList.get(j).set(i, average);
 			}
+		}
+	}
+
+	public void calculateAveragePerRow(List<List<Double>> matrixRowList, String tableName, List<String> list,
+			String date) throws SQLException {
+		for (int i = 0; i < matrixRowList.size(); i++) {
+			Double average = 0.0;
+			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
+				average += matrixRowList.get(i).get(j);
+			}
+			average /= matrixRowList.get(i).size() - 1;
+			dao.insertToSortedAverage(tableName, list.get(i), date, average);
+		}
+	}
+
+	public void calculateAveragePerRow2(List<List<Double>> matrixRowList, String tableName, String proxCard,
+			List<String> list) throws SQLException {
+		for (int i = 0; i < matrixRowList.size(); i++) {
+			Double average = 0.0;
+			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
+				average += matrixRowList.get(i).get(j);
+			}
+			average /= matrixRowList.get(i).size() - 1;
+			dao.insertToSortedAverage(tableName, proxCard, list.get(i), average);
 		}
 	}
 
@@ -349,7 +373,7 @@ public class Analysis {
 		}
 		return matrixRowListCopy;
 	}
-	
+
 	public void printMatrixRowList(List<List<Double>> matrixRowList) {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
