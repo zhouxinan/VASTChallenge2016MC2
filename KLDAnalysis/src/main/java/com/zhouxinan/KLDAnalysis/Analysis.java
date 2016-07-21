@@ -351,7 +351,7 @@ public class Analysis {
 		}
 	}
 
-	public void calculateAveragePerRow(List<List<Double>> matrixRowList, String tableName, List<String> list,
+	public void calculateAveragePerRow(List<List<Double>> matrixRowList, String tableName, List<String> proxCardList,
 			String date) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
@@ -359,19 +359,19 @@ public class Analysis {
 				average += matrixRowList.get(i).get(j);
 			}
 			average /= matrixRowList.get(i).size() - 1;
-			dao.insertToSortedAverage(tableName, list.get(i), date, average);
+			dao.insertToSortedAverage(tableName, proxCardList.get(i), date, average);
 		}
 	}
 
 	public void calculateAveragePerRow2(List<List<Double>> matrixRowList, String tableName, String proxCard,
-			List<String> list) throws SQLException {
+			List<String> dateList) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
 			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
 				average += matrixRowList.get(i).get(j);
 			}
 			average /= matrixRowList.get(i).size() - 1;
-			dao.insertToSortedAverage(tableName, proxCard, list.get(i), average);
+			dao.insertToSortedAverage(tableName, proxCard, dateList.get(i), average);
 		}
 	}
 
