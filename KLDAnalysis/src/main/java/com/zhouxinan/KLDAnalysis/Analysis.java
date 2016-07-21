@@ -340,6 +340,16 @@ public class Analysis {
 		}
 	}
 
+	public List<List<Double>> roundMatrixRowList(List<List<Double>> matrixRowList) {
+		List<List<Double>> matrixRowListCopy = new ArrayList<List<Double>>(matrixRowList);
+		for (int i = 0; i < matrixRowListCopy.size(); i++) {
+			for (int j = 0; j < matrixRowListCopy.get(i).size(); j++) {
+				matrixRowListCopy.get(i).set(j, Math.round(matrixRowListCopy.get(i).get(j) * 100.0) / 100.0);
+			}
+		}
+		return matrixRowListCopy;
+	}
+	
 	public void printMatrixRowList(List<List<Double>> matrixRowList) {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
