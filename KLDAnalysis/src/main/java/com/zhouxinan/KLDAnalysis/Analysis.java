@@ -349,17 +349,4 @@ public class Analysis {
 		}
 	}
 
-	public void testPrint() {
-		List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
-		for (int i = 0; i < 4; i++) {
-			List<Double> matrixRow = new ArrayList<Double>();
-			matrixRow.add(1.0);
-			matrixRow.add(2.0);
-			matrixRow.add(3.0);
-			matrixRow.add(4.0);
-			matrixRowList.add(matrixRow);
-		}
-		processMatrixRowList(matrixRowList);
-		printMatrixRowList(matrixRowList);
-	}
 }

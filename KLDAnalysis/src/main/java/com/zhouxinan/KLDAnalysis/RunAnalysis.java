@@ -19,6 +19,5 @@ public class RunAnalysis {
 //		analysis.calculateAverageKLDPerDepartment(true);
 //		analysis.calculateAverageKLDPerDepartment(false);
 //		analysis.calculateAverageKLDOfSortedHistogramPerDepartment();
-		analysis.testPrint();
 	}
 }
