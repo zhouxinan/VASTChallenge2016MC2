@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -169,6 +170,7 @@ public class Dao {
 				psd.setFloor(results.getInt("floor"));
 				psd.setZone(results.getString("zone"));
 				psd.setOffset(results.getDouble("offset"));
+				psd.setDatetime(results.getTimestamp("datetime"));
 				psdList.add(psd);
 			}
 			return psdList;
@@ -186,15 +188,15 @@ public class Dao {
 		return null;
 	}
 
-	public void insertToAnalysisTable(String proxCard, String zone, String date, Integer floor, Double duration)
+	public void insertToAnalysisTable(String proxCard, String zone, Integer floor, Double duration, Date datetime)
 			throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "INSERT INTO daily_data (proxCard,datetime,floor,zone,duration) VALUES ('" + proxCard + "', '"
-					+ date + " 00:00:00', '" + floor + "', '" + zone + "', '" + duration
+			String sql = "INSERT INTO daily_data2 (proxCard,datetime,floor,zone,duration) VALUES ('" + proxCard + "', '"
+					+ datetime + "', '" + floor + "', '" + zone + "', '" + duration
 					+ "') ON DUPLICATE KEY UPDATE duration=duration+" + duration + ";";
 			sm.executeUpdate(sql);
 		} catch (SQLException e) {
