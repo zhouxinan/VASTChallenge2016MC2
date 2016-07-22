@@ -162,7 +162,7 @@ public class Dao {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
 			String sql = "SELECT * FROM prox_sensor_data WHERE datetime BETWEEN '" + date + " 00:00:00' AND '" + date
-					+ " 23:59:59' and proxCard = '" + proxCard + "';";
+					+ " 23:59:59' and proxCard = '" + proxCard + "' order by offset asc;";
 			results = sm.executeQuery(sql);
 			List<ProxSensorData> psdList = new LinkedList<ProxSensorData>();
 			while (results.next()) {
