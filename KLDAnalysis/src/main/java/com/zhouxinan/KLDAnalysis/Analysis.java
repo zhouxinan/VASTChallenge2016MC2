@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,20 +36,30 @@ public class Analysis {
 				Double offset = firstOffset;
 				Integer floor = proxSensorData.getFloor();
 				String zone = proxSensorData.getZone();
+<<<<<<< HEAD
 				Date datetime = proxSensorData.getDatetime();
 				Double duration = 0.0;
 				while (iterator3.hasNext()) {
 					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
 					duration = currentPsd.getOffset() - offset;
 					dao.insertToAnalysisTable(proxCard, zone, floor, duration, datetime);
+=======
+				while (iterator3.hasNext()) {
+					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
+					Double duration = currentPsd.getOffset() - offset;
+					dao.insertToAnalysisTable(proxCard, zone, date, floor, duration);
+>>>>>>> parent of 8ba3fcf... Add insert datetime.
 					offset = currentPsd.getOffset();
 					floor = currentPsd.getFloor();
 					zone = currentPsd.getZone();
-					datetime = currentPsd.getDatetime();
 				}
+<<<<<<< HEAD
 				dao.insertToAnalysisTable(proxCard, zone, floor, duration, datetime);
 				// How to handle the final insert?
 				Double durationOfDay = offset - firstOffset + duration;
+=======
+				Double durationOfDay = offset - firstOffset;
+>>>>>>> parent of 8ba3fcf... Add insert datetime.
 				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
 			}
 		}
