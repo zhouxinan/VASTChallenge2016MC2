@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,40 @@ public class Analysis {
 				}
 				Double durationOfDay = offset - firstOffset;
 				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
+			}
+		}
+	}
+
+	public void buildDailyDataTable2() throws SQLException {
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date);
+				/*
+				 * The following 3 lines of code run with no result, which
+				 * proves the validity of the following algorithm.
+				 */
+				// if (psdList.size() == 1) {
+				// System.out.println(date + proxCard);
+				// }
+				Iterator<ProxSensorData> iterator3 = psdList.iterator();
+				ProxSensorData proxSensorData = (ProxSensorData) iterator3.next();
+				Double offset = proxSensorData.getOffset();
+				Integer floor = proxSensorData.getFloor();
+				String zone = proxSensorData.getZone();
+				Date datetime = proxSensorData.getDatetime();
+				while (iterator3.hasNext()) {
+					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
+					Double duration = currentPsd.getOffset() - offset;
+					dao.insertToAnalysisTable2(proxCard, zone, datetime, floor, duration);
+					offset = currentPsd.getOffset();
+					floor = currentPsd.getFloor();
+					zone = currentPsd.getZone();
+					datetime = currentPsd.getDatetime();
+				}
 			}
 		}
 	}

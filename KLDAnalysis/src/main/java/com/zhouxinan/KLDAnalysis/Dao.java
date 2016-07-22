@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -169,6 +170,42 @@ public class Dao {
 				psd.setFloor(results.getInt("floor"));
 				psd.setZone(results.getString("zone"));
 				psd.setOffset(results.getDouble("offset"));
+				psd.setDatetime(results.getTimestamp("datetime"));
+				psdList.add(psd);
+			}
+			return psdList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
+	public List<ProxSensorData> selectByProxCardAndDate(String proxCard, String date, String startTime, String endTime)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT * FROM prox_sensor_data WHERE datetime BETWEEN '" + date + " " + startTime + "' AND '"
+					+ date + " " + endTime + "' and proxCard = '" + proxCard + "' order by offset asc;";
+			results = sm.executeQuery(sql);
+			List<ProxSensorData> psdList = new LinkedList<ProxSensorData>();
+			while (results.next()) {
+				ProxSensorData psd = new ProxSensorData();
+				psd.setFloor(results.getInt("floor"));
+				psd.setZone(results.getString("zone"));
+				psd.setOffset(results.getDouble("offset"));
+				psd.setDatetime(results.getTimestamp("datetime"));
 				psdList.add(psd);
 			}
 			return psdList;
@@ -196,6 +233,29 @@ public class Dao {
 			String sql = "INSERT INTO daily_data (proxCard,datetime,floor,zone,duration) VALUES ('" + proxCard + "', '"
 					+ date + " 00:00:00', '" + floor + "', '" + zone + "', '" + duration
 					+ "') ON DUPLICATE KEY UPDATE duration=duration+" + duration + ";";
+			sm.executeUpdate(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+	}
+
+	public void insertToAnalysisTable2(String proxCard, String zone, Date datetime, Integer floor, Double duration)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "INSERT INTO daily_data_2 (proxCard,datetime,floor,zone,duration) VALUES ('" + proxCard
+					+ "', '" + datetime + "', '" + floor + "', '" + zone + "', '" + duration + "');";
 			sm.executeUpdate(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
