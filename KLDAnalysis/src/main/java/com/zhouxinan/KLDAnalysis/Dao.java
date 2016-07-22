@@ -565,4 +565,36 @@ public class Dao {
 			}
 		}
 	}
+
+	public List<ProxSensorData> selectFromSortedAverage(int limit, String tableName) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT * from " + tableName + " order by average desc limit " + limit + ";";
+			results = sm.executeQuery(sql);
+			List<ProxSensorData> list = new LinkedList<ProxSensorData>();
+			while (results.next()) {
+				ProxSensorData psd = new ProxSensorData();
+				psd.setProxcard(results.getString("proxCard"));
+				psd.setDatetime(results.getDate("datetime"));
+				psd.setProbability(results.getDouble("average"));
+				list.add(psd);
+			}
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 }

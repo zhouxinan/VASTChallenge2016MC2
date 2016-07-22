@@ -399,4 +399,14 @@ public class Analysis {
 			System.out.println();
 		}
 	}
+
+	public void reportSortedAverage(int limit, String tableName) throws SQLException {
+		List<ProxSensorData> psdList = dao.selectFromSortedAverage(limit, tableName);
+		for (Iterator<ProxSensorData> iterator = psdList.iterator(); iterator.hasNext();) {
+			ProxSensorData proxSensorData = (ProxSensorData) iterator.next();
+			System.out.println("proxCard: " + proxSensorData.getProxcard() + "\tdatetime: "
+					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability());
+		}
+		System.out.println("===========================================");
+	}
 }
