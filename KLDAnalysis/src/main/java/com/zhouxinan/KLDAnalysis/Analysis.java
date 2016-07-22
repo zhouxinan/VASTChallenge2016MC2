@@ -36,30 +36,15 @@ public class Analysis {
 				Double offset = firstOffset;
 				Integer floor = proxSensorData.getFloor();
 				String zone = proxSensorData.getZone();
-<<<<<<< HEAD
-				Date datetime = proxSensorData.getDatetime();
-				Double duration = 0.0;
-				while (iterator3.hasNext()) {
-					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
-					duration = currentPsd.getOffset() - offset;
-					dao.insertToAnalysisTable(proxCard, zone, floor, duration, datetime);
-=======
 				while (iterator3.hasNext()) {
 					ProxSensorData currentPsd = (ProxSensorData) iterator3.next();
 					Double duration = currentPsd.getOffset() - offset;
 					dao.insertToAnalysisTable(proxCard, zone, date, floor, duration);
->>>>>>> parent of 8ba3fcf... Add insert datetime.
 					offset = currentPsd.getOffset();
 					floor = currentPsd.getFloor();
 					zone = currentPsd.getZone();
 				}
-<<<<<<< HEAD
-				dao.insertToAnalysisTable(proxCard, zone, floor, duration, datetime);
-				// How to handle the final insert?
-				Double durationOfDay = offset - firstOffset + duration;
-=======
 				Double durationOfDay = offset - firstOffset;
->>>>>>> parent of 8ba3fcf... Add insert datetime.
 				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
 			}
 		}
