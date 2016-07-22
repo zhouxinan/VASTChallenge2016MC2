@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class RunAnalysis {
 	public static void main(String[] args) throws SQLException, IOException {
 		Analysis analysis = new Analysis();
-		analysis.buildDailyDataTable2();
+//		analysis.buildDailyDataTable2();
 //		analysis.calculateKLDPerPerson(true, true);
 //		analysis.calculateKLDPerPerson(false, true);
 //		analysis.calculateKLDOfSortedHistogramPerPerson(true);
@@ -25,5 +25,6 @@ public class RunAnalysis {
 //		analysis.reportSortedAverage(10, "sorted_average_4");
 //		analysis.reportSortedAverage(10, "sorted_average_5");
 //		analysis.reportSortedAverage(10, "sorted_average_6");
+		analysis.divideSectionTest();
 	}
 }
