@@ -50,7 +50,7 @@ public class Analysis {
 				}
 				dao.insertToAnalysisTable(proxCard, zone, floor, duration, datetime);
 				// How to handle the final insert?
-				Double durationOfDay = offset - firstOffset;
+				Double durationOfDay = offset - firstOffset + duration;
 				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
 			}
 		}
