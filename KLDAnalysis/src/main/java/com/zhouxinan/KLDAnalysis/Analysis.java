@@ -89,7 +89,7 @@ public class Analysis {
 	}
 
 	public void divideSection() throws SQLException {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		List<String> proxCardList = dao.selectAllProxCard();
 		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
 			String proxCard = (String) iterator.next();
