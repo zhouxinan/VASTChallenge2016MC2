@@ -222,9 +222,9 @@ public class Dao {
 		}
 		return null;
 	}
-	
-	public List<ProxSensorData> selectByProxCardAndDateFromDailyData2(String proxCard, String date, String startTime, String endTime)
-			throws SQLException {
+
+	public List<ProxSensorData> selectByProxCardAndDateFromDailyData2(String proxCard, String date, String startTime,
+			String endTime) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
@@ -305,15 +305,39 @@ public class Dao {
 		}
 	}
 
-	public void calculateProbabilityForDayAndPerson(String proxCard, String date, Double durationOfDay)
-			throws SQLException {
+	public void insertToDailyDataBySection(String proxCard, String zone, String datetime, Integer floor,
+			Double duration) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "INSERT INTO daily_data_by_section (proxCard,datetime,floor,zone,duration) VALUES ('"
+					+ proxCard + "', '" + datetime + "', '" + floor + "', '" + zone + "', '" + duration + "');";
+			sm.executeUpdate(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+	}
+
+	public void calculateProbabilityForDayAndPerson(String proxCard, String date, Double durationOfDay,
+			String startTime, String endTime) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
 			String sql = "UPDATE daily_data SET probability=duration/" + durationOfDay + " WHERE `datetime` between '"
-					+ date + " 00:00:00' and '" + date + " 23:59:59' and proxCard = '" + proxCard + "';";
+					+ date + " " + startTime + "' and '" + date + " " + endTime + "' and proxCard = '" + proxCard
+					+ "';";
 			sm.executeUpdate(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

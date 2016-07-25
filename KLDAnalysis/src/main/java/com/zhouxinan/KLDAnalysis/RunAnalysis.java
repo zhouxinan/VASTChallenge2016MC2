@@ -25,6 +25,6 @@ public class RunAnalysis {
 //		analysis.reportSortedAverage(10, "sorted_average_4");
 //		analysis.reportSortedAverage(10, "sorted_average_5");
 //		analysis.reportSortedAverage(10, "sorted_average_6");
-		analysis.divideSectionTest();
+		analysis.divideSection();
 	}
 }

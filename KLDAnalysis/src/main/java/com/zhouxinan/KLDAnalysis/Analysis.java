@@ -5,7 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -46,7 +49,7 @@ public class Analysis {
 					zone = currentPsd.getZone();
 				}
 				Double durationOfDay = offset - firstOffset;
-				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay);
+				dao.calculateProbabilityForDayAndPerson(proxCard, date, durationOfDay, "00:00:00", "23:59:59");
 			}
 		}
 	}
@@ -85,27 +88,61 @@ public class Analysis {
 		}
 	}
 
-	public void divideSectionTest() throws SQLException {
-		List<List<ProxSensorData>> psdListArray = new ArrayList<List<ProxSensorData>>();
-		List<ProxSensorData> psdList1 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "00:00:00",
-				"05:59:59");
-		List<ProxSensorData> psdList2 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "06:00:00",
-				"11:59:59");
-		List<ProxSensorData> psdList3 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "12:00:00",
-				"17:59:59");
-		List<ProxSensorData> psdList4 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "18:00:00",
-				"23:59:59");
-		psdListArray.add(psdList1);
-		psdListArray.add(psdList2);
-		psdListArray.add(psdList3);
-		psdListArray.add(psdList4);
-		for (Iterator<List<ProxSensorData>> iterator = psdListArray.iterator(); iterator.hasNext();) {
-			List<ProxSensorData> list = (List<ProxSensorData>) iterator.next();
-			for (Iterator<ProxSensorData> iterator2 = list.iterator(); iterator2.hasNext();) {
-				ProxSensorData proxSensorData = (ProxSensorData) iterator2.next();
-				System.out.println(proxSensorData.getDatetime());
+	public void divideSection() throws SQLException {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		List<String> proxCardList = dao.selectAllProxCard();
+		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+			String proxCard = (String) iterator.next();
+			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+				String date = (String) iterator2.next();
+				System.out.println("proxCard: " + proxCard + " date: " + date);
+				List<List<ProxSensorData>> psdListArray = new ArrayList<List<ProxSensorData>>();
+				List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
+				List<String> endTimeList = Arrays.asList("05:59:59", "11:59:59", "17:59:59", "23:59:59");
+				int sectionCount = startTimeList.size();
+				for (int i = 0; i < sectionCount; i++) {
+					psdListArray.add(dao.selectByProxCardAndDateFromDailyData2(proxCard, date, startTimeList.get(i),
+							endTimeList.get(i)));
+				}
+				try {
+					for (int i = 0; i < sectionCount; i++) {
+						List<ProxSensorData> psdList = psdListArray.get(i);
+						if (i != sectionCount - 1 && !psdList.isEmpty() && !psdListArray.get(i + 1).isEmpty()) {
+							Date sectionEndTime = formatter.parse(date + " " + endTimeList.get(i));
+							Date nextSectionStartTime = formatter.parse(date + " " + startTimeList.get(i + 1));
+							ProxSensorData psd = psdList.get(psdList.size() - 1);
+							ProxSensorData psd2 = psdListArray.get(i + 1).get(0);
+							psd.setDuration(Double
+									.parseDouble((sectionEndTime.getTime() - psd.getDatetime().getTime()) / 1000 + ""));
+							ProxSensorData psdNew = new ProxSensorData();
+							psdNew.setDatetime(nextSectionStartTime);
+							psdNew.setFloor(psd.getFloor());
+							psdNew.setZone(psd.getZone());
+							psdNew.setDuration(Double.parseDouble(
+									(psd2.getDatetime().getTime() - nextSectionStartTime.getTime()) / 1000 + ""));
+							psdListArray.get(i + 1).add(0, psdNew);
+						}
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				for (Iterator<List<ProxSensorData>> iterator3 = psdListArray.iterator(); iterator3.hasNext();) {
+					List<ProxSensorData> list = (List<ProxSensorData>) iterator3.next();
+					for (Iterator<ProxSensorData> iterator4 = list.iterator(); iterator4.hasNext();) {
+						ProxSensorData proxSensorData = (ProxSensorData) iterator4.next();
+						dao.insertToDailyDataBySection(proxCard, proxSensorData.getZone(),
+								formatter.format(proxSensorData.getDatetime()), proxSensorData.getFloor(),
+								proxSensorData.getDuration());
+						// System.out.println(
+						// formatter.format(proxSensorData.getDatetime()) + " "
+						// + proxSensorData.getDuration()
+						// + " " + proxSensorData.getZone() + " " +
+						// proxSensorData.getFloor());
+					}
+					// System.out.println("===========================");
+				}
 			}
-			System.out.println("===========================");
 		}
 	}
 
