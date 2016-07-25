@@ -18,6 +18,8 @@ public class ProxSensorData {
     private Double offset;
     
     private Double probability;
+    
+    private Double duration;
 
     public Double getProbability() {
 		return probability;
@@ -82,4 +84,12 @@ public class ProxSensorData {
     public void setOffset(Double offset) {
         this.offset = offset;
     }
+
+	public Double getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
 }

@@ -222,6 +222,41 @@ public class Dao {
 		}
 		return null;
 	}
+	
+	public List<ProxSensorData> selectByProxCardAndDateFromDailyData2(String proxCard, String date, String startTime, String endTime)
+			throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT * FROM daily_data_2 WHERE datetime BETWEEN '" + date + " " + startTime + "' AND '"
+					+ date + " " + endTime + "' and proxCard = '" + proxCard + "' order by datetime asc;";
+			results = sm.executeQuery(sql);
+			List<ProxSensorData> psdList = new LinkedList<ProxSensorData>();
+			while (results.next()) {
+				ProxSensorData psd = new ProxSensorData();
+				psd.setFloor(results.getInt("floor"));
+				psd.setZone(results.getString("zone"));
+				psd.setDuration(results.getDouble("duration"));
+				psd.setDatetime(results.getTimestamp("datetime"));
+				psdList.add(psd);
+			}
+			return psdList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
 
 	public void insertToAnalysisTable(String proxCard, String zone, String date, Integer floor, Double duration)
 			throws SQLException {

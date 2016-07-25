@@ -87,10 +87,14 @@ public class Analysis {
 
 	public void divideSectionTest() throws SQLException {
 		List<List<ProxSensorData>> psdListArray = new ArrayList<List<ProxSensorData>>();
-		List<ProxSensorData> psdList1 = dao.selectByProxCardAndDate("acalzas", "2016-05-31", "00:00:00", "05:59:59");
-		List<ProxSensorData> psdList2 = dao.selectByProxCardAndDate("acalzas", "2016-05-31", "06:00:00", "11:59:59");
-		List<ProxSensorData> psdList3 = dao.selectByProxCardAndDate("acalzas", "2016-05-31", "12:00:00", "17:59:59");
-		List<ProxSensorData> psdList4 = dao.selectByProxCardAndDate("acalzas", "2016-05-31", "18:00:00", "23:59:59");
+		List<ProxSensorData> psdList1 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "00:00:00",
+				"05:59:59");
+		List<ProxSensorData> psdList2 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "06:00:00",
+				"11:59:59");
+		List<ProxSensorData> psdList3 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "12:00:00",
+				"17:59:59");
+		List<ProxSensorData> psdList4 = dao.selectByProxCardAndDateFromDailyData2("acalzas", "2016-05-31", "18:00:00",
+				"23:59:59");
 		psdListArray.add(psdList1);
 		psdListArray.add(psdList2);
 		psdListArray.add(psdList3);
@@ -104,7 +108,7 @@ public class Analysis {
 			System.out.println("===========================");
 		}
 	}
-	
+
 	public void calculateKLDPerPerson(boolean isInnerJoin, boolean isMatrixSymmetrical)
 			throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
