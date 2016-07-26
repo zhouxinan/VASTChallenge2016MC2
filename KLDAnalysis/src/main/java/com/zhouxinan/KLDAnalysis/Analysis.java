@@ -129,12 +129,15 @@ public class Analysis {
 				}
 				for (int i = 0; i < sectionCount; i++) {
 					List<ProxSensorData> psdList = psdListArray.get(i);
+					Double durationOfSection = 0.0;
 					for (int j = 0; j < psdList.size(); j++) {
 						ProxSensorData proxSensorData = psdList.get(j);
 						dao.insertToDailyDataBySection(proxCard, proxSensorData.getZone(),
 								date + " " + startTimeList.get(i), proxSensorData.getFloor(),
 								proxSensorData.getDuration());
+						durationOfSection += proxSensorData.getDuration();
 					}
+					dao.calculateProbabilityForDayAndPersonAndSection(proxCard, date, durationOfSection, startTimeList.get(i));
 				}
 			}
 		}
@@ -168,9 +171,9 @@ public class Analysis {
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
 					if (isInnerJoin) {
-						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2));
+						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2, "00:00:00"));
 					} else {
-						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2));
+						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, "00:00:00"));
 					}
 				}
 				matrixRowList.add(matrixRow);
@@ -240,9 +243,9 @@ public class Analysis {
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
 					if (isInnerJoin) {
-						average += dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2);
+						average += dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2, "00:00:00");
 					} else {
-						average += dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2);
+						average += dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, "00:00:00");
 					}
 				}
 				average /= dateList2.size() - 1;
