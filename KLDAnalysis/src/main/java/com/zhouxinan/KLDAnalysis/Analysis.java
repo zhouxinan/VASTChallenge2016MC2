@@ -197,6 +197,65 @@ public class Analysis {
 		printWriter.close();
 	}
 
+	public void calculateKLDBySectionPerPerson(boolean isInnerJoin, boolean isMatrixSymmetrical)
+			throws SQLException, FileNotFoundException {
+		int hours[] = { 0, 6, 12, 18 };
+		List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
+		for (int i = 0; i < hours.length; i++) {
+			Gson gson = new Gson();
+			String fileName;
+			if (isInnerJoin) {
+				fileName = "EmployeeByHour" + hours[i] + "Comparisons.json";
+			} else {
+				fileName = "EmployeeByHour" + hours[i] + "ComparisonsApprox.json";
+			}
+			File file = new File(fileName);
+			PrintWriter printWriter = new PrintWriter(file);
+			List<String> proxCardList = dao.selectAllProxCardByHour(hours[i]);
+			for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
+				String proxCard = (String) iterator.next();
+				printWriter.print("\"" + proxCard + "\" : {\n");
+				List<String> dateList = dao.selectDistinctDateOfProxCardAndHour(proxCard, hours[i]);
+				String dateListJson = gson.toJson(dateList);
+				printWriter.print("\"dates\" : ");
+				printWriter.print(dateListJson + ",\n");
+				printWriter.print("\"matrix\" : \n");
+				List<List<Double>> matrixRowList = new ArrayList<List<Double>>();
+				for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
+					String date = (String) iterator2.next();
+					List<Double> matrixRow = new ArrayList<Double>();
+					List<String> dateList2 = dao.selectDistinctDateOfProxCardAndHour(proxCard, hours[i]);
+					for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
+						String date2 = (String) iterator3.next();
+						if (isInnerJoin) {
+							matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2,
+									startTimeList.get(i), "daily_data_by_section"));
+						} else {
+							matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, startTimeList.get(i),
+									"daily_data_by_section"));
+						}
+					}
+					matrixRowList.add(matrixRow);
+				}
+				if (isMatrixSymmetrical) {
+					makeMatrixSymmetric(matrixRowList);
+				}
+				printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
+				// if (isInnerJoin) {
+				// calculateAveragePerRow2(matrixRowList, "sorted_average_2",
+				// proxCard, dateList);
+				// } else {
+				// calculateAveragePerRow2(matrixRowList, "sorted_average",
+				// proxCard, dateList);
+				// }
+				if (iterator.hasNext()) {
+					printWriter.println(",");
+				}
+			}
+			printWriter.close();
+		}
+	}
+
 	public void calculateKLDOfSortedHistogramPerPerson(boolean isMatrixSymmetrical)
 			throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();

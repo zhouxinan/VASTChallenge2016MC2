@@ -25,6 +25,8 @@ public class RunAnalysis {
 //		analysis.reportSortedAverage(10, "sorted_average_4");
 //		analysis.reportSortedAverage(10, "sorted_average_5");
 //		analysis.reportSortedAverage(10, "sorted_average_6");
-		analysis.divideSection();
+//		analysis.divideSection();
+		analysis.calculateKLDBySectionPerPerson(true, true);
+		analysis.calculateKLDBySectionPerPerson(false, true);
 	}
 }

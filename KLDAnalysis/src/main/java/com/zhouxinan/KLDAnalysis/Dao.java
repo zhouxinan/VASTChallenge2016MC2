@@ -93,6 +93,34 @@ public class Dao {
 		return null;
 	}
 
+	public List<String> selectAllProxCardByHour(int hour) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT distinct(proxCard) from daily_data_by_section where HOUR(datetime) = " + hour + ";";
+			results = sm.executeQuery(sql);
+			List<String> proxCardList = new LinkedList<String>();
+			while (results.next()) {
+				proxCardList.add(results.getString("proxCard"));
+			}
+			return proxCardList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
 	public List<ProxSensorData> selectAllProxSensorDataOfProxCard(String proxCard) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
@@ -111,6 +139,35 @@ public class Dao {
 				psdList.add(psd);
 			}
 			return psdList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
+	public List<String> selectDistinctDateOfProxCardAndHour(String proxCard, int hour) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "select distinct date(datetime) as date from daily_data_by_section where proxCard = '"
+					+ proxCard + "' and HOUR(datetime) = '" + hour + "';";
+			results = sm.executeQuery(sql);
+			List<String> dateList = new LinkedList<String>();
+			while (results.next()) {
+				dateList.add(results.getString("date"));
+			}
+			return dateList;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
