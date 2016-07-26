@@ -376,21 +376,21 @@ public class Dao {
 		}
 	}
 
-	public Double selectKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2, String time)
-			throws SQLException {
+	public Double selectKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2, String time,
+			String tableName) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "SELECT SUM(KLDi) as KLD from (SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
-					+ date1 + " " + time + "' and proxCard = '" + proxCard
-					+ "') as A LEFT JOIN (SELECT * from daily_data where datetime='" + date2 + " " + time
+			String sql = "SELECT SUM(KLDi) as KLD from (SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from "
+					+ tableName + " where datetime='" + date1 + " " + time + "' and proxCard = '" + proxCard
+					+ "') as A LEFT JOIN (SELECT * from " + tableName + " where datetime='" + date2 + " " + time
 					+ "' and proxCard = '" + proxCard
-					+ "') as B on A.floor = B.floor and A.zone = B.zone) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from daily_data where datetime='"
-					+ date1 + " " + time + "' and proxCard = '" + proxCard
-					+ "') as A RIGHT JOIN (SELECT * from daily_data where datetime='" + date2 + " " + time
+					+ "') as B on A.floor = B.floor and A.zone = B.zone) UNION SELECT IFNULL(A.probability, 0.00000001)*(log2(IFNULL(A.probability, 0.00000001))-log2(IFNULL(B.probability, 0.00000001))) as KLDi from ((SELECT * from "
+					+ tableName + " where datetime='" + date1 + " " + time + "' and proxCard = '" + proxCard
+					+ "') as A RIGHT JOIN (SELECT * from " + tableName + " where datetime='" + date2 + " " + time
 					+ "' and proxCard = '" + proxCard + "') as B on A.floor = B.floor and A.zone = B.zone)) as C";
 			results = sm.executeQuery(sql);
 			if (results.next()) {
@@ -411,17 +411,17 @@ public class Dao {
 		return null;
 	}
 
-	public Double selectKLDOfTwoDatesOfProxCardInnerJoin(String proxCard, String date1, String date2, String time)
-			throws SQLException {
+	public Double selectKLDOfTwoDatesOfProxCardInnerJoin(String proxCard, String date1, String date2, String time,
+			String tableName) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(B.probability))) as KLD from ((SELECT * from daily_data where datetime='"
-					+ date1 + " " + time + "' and proxCard = '" + proxCard
-					+ "') as A INNER JOIN (SELECT * from daily_data where datetime='" + date2 + " " + time
+			String sql = "SELECT SUM(A.probability*(log2(A.probability)-log2(B.probability))) as KLD from ((SELECT * from "
+					+ tableName + " where datetime='" + date1 + " " + time + "' and proxCard = '" + proxCard
+					+ "') as A INNER JOIN (SELECT * from " + tableName + " where datetime='" + date2 + " " + time
 					+ "' and proxCard = '" + proxCard + "') as B on A.floor = B.floor and A.zone = B.zone)";
 			results = sm.executeQuery(sql);
 			if (results.next()) {
