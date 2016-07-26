@@ -127,20 +127,14 @@ public class Analysis {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				for (Iterator<List<ProxSensorData>> iterator3 = psdListArray.iterator(); iterator3.hasNext();) {
-					List<ProxSensorData> list = (List<ProxSensorData>) iterator3.next();
-					for (Iterator<ProxSensorData> iterator4 = list.iterator(); iterator4.hasNext();) {
-						ProxSensorData proxSensorData = (ProxSensorData) iterator4.next();
+				for (int i = 0; i < sectionCount; i++) {
+					List<ProxSensorData> psdList = psdListArray.get(i);
+					for (int j = 0; j < psdList.size(); j++) {
+						ProxSensorData proxSensorData = psdList.get(j);
 						dao.insertToDailyDataBySection(proxCard, proxSensorData.getZone(),
-								formatter.format(proxSensorData.getDatetime()), proxSensorData.getFloor(),
+								date + " " + startTimeList.get(i), proxSensorData.getFloor(),
 								proxSensorData.getDuration());
-						// System.out.println(
-						// formatter.format(proxSensorData.getDatetime()) + " "
-						// + proxSensorData.getDuration()
-						// + " " + proxSensorData.getZone() + " " +
-						// proxSensorData.getFloor());
 					}
-					// System.out.println("===========================");
 				}
 			}
 		}

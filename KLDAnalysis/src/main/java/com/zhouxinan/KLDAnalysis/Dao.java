@@ -313,7 +313,8 @@ public class Dao {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
 			String sql = "INSERT INTO daily_data_by_section (proxCard,datetime,floor,zone,duration) VALUES ('"
-					+ proxCard + "', '" + datetime + "', '" + floor + "', '" + zone + "', '" + duration + "');";
+					+ proxCard + "', '" + datetime + "', '" + floor + "', '" + zone + "', '" + duration
+					+ "') ON DUPLICATE KEY UPDATE duration=duration+" + duration + ";";
 			sm.executeUpdate(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
