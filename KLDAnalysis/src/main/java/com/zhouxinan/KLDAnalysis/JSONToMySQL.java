@@ -24,7 +24,8 @@ public class JSONToMySQL {
 			String datetime = (String) message.get("datetime");
 			Integer floor = Integer.parseInt((String) message.get("floor"));
 			Double offset = (Double) record.get("offset");
-			dao.insertRowToTable(proxCard.substring(0, proxCard.length() - 3), zone, datetime, floor, 1, offset);
+//			dao.insertRowToTable(proxCard.substring(0, proxCard.length() - 3), zone, datetime, floor, 1, offset);
+			dao.insertRowToTable(proxCard, zone, datetime, floor, 1, offset);
 		}
 	}
 }
