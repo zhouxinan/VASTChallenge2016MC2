@@ -277,7 +277,8 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					matrixRow.add(dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5));
+					matrixRow.add(
+							dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5, "00:00:00"));
 				}
 				matrixRowList.add(matrixRow);
 			}
@@ -293,52 +294,63 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateAverageKLDPerDayPerPerson(boolean isInnerJoin) throws SQLException, FileNotFoundException {
-		List<String> proxCardList = dao.selectAllProxCard();
-		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
-			String proxCard = (String) iterator.next();
-			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				Double average = 0.0;
-				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
-				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
-					String date2 = (String) iterator3.next();
-					if (isInnerJoin) {
-						average += dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2, "00:00:00",
-								"daily_data");
-					} else {
-						average += dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, "00:00:00", "daily_data");
-					}
-				}
-				average /= dateList2.size() - 1;
-				if (isInnerJoin) {
-					dao.insertToSortedAverage("sorted_average_2", proxCard, date, average);
-				} else {
-					dao.insertToSortedAverage("sorted_average", proxCard, date, average);
-				}
-			}
-		}
-	}
+	// public void calculateAverageKLDPerDayPerPerson(boolean isInnerJoin)
+	// throws SQLException, FileNotFoundException {
+	// List<String> proxCardList = dao.selectAllProxCard();
+	// for (Iterator<String> iterator = proxCardList.iterator();
+	// iterator.hasNext();) {
+	// String proxCard = (String) iterator.next();
+	// List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+	// for (Iterator<String> iterator2 = dateList.iterator();
+	// iterator2.hasNext();) {
+	// String date = (String) iterator2.next();
+	// Double average = 0.0;
+	// List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+	// for (Iterator<String> iterator3 = dateList2.iterator();
+	// iterator3.hasNext();) {
+	// String date2 = (String) iterator3.next();
+	// if (isInnerJoin) {
+	// average += dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date,
+	// date2, "00:00:00",
+	// "daily_data");
+	// } else {
+	// average += dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2,
+	// "00:00:00", "daily_data");
+	// }
+	// }
+	// average /= dateList2.size() - 1;
+	// if (isInnerJoin) {
+	// dao.insertToSortedAverage("sorted_average_2", proxCard, date, average);
+	// } else {
+	// dao.insertToSortedAverage("sorted_average", proxCard, date, average);
+	// }
+	// }
+	// }
+	// }
 
-	public void calculateAverageKLDOfSortedHistogramPerDayPerPerson() throws SQLException, FileNotFoundException {
-		List<String> proxCardList = dao.selectAllProxCard();
-		for (Iterator<String> iterator = proxCardList.iterator(); iterator.hasNext();) {
-			String proxCard = (String) iterator.next();
-			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				Double average = 0.0;
-				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
-				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
-					String date2 = (String) iterator3.next();
-					average += dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard, date, date2, 5);
-				}
-				average /= dateList2.size() - 1;
-				dao.insertToSortedAverage("sorted_average_3", proxCard, date, average);
-			}
-		}
-	}
+	// public void calculateAverageKLDOfSortedHistogramPerDayPerPerson() throws
+	// SQLException, FileNotFoundException {
+	// List<String> proxCardList = dao.selectAllProxCard();
+	// for (Iterator<String> iterator = proxCardList.iterator();
+	// iterator.hasNext();) {
+	// String proxCard = (String) iterator.next();
+	// List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
+	// for (Iterator<String> iterator2 = dateList.iterator();
+	// iterator2.hasNext();) {
+	// String date = (String) iterator2.next();
+	// Double average = 0.0;
+	// List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
+	// for (Iterator<String> iterator3 = dateList2.iterator();
+	// iterator3.hasNext();) {
+	// String date2 = (String) iterator3.next();
+	// average += dao.selectSortedHistogramKLDOfTwoDatesOfProxCard(proxCard,
+	// date, date2, 5, "00:00:00");
+	// }
+	// average /= dateList2.size() - 1;
+	// dao.insertToSortedAverage("sorted_average_3", proxCard, date, average);
+	// }
+	// }
+	// }
 
 	public void calculateKLDPerDepartment(boolean isInnerJoin, boolean isMatrixSymmetrical)
 			throws SQLException, IOException {
@@ -372,9 +384,10 @@ public class Analysis {
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
 						if (isInnerJoin) {
-							matrixRow.add(dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date));
+							matrixRow.add(
+									dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date, "00:00:00"));
 						} else {
-							matrixRow.add(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date));
+							matrixRow.add(dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date, "00:00:00"));
 						}
 
 					}
@@ -401,7 +414,7 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateKLDOfSortedHistogramPerDepartment(boolean isMatrixSymmetrical)
+	public void calculateKLDOfSortedHistogramPerDepartment(boolean isMatrixSymmetrical, boolean isProxCardAnalysis)
 			throws SQLException, IOException {
 		Gson gson = new Gson();
 		File file = new File("DepartmentComparisonsSortedHistogram.json");
@@ -410,11 +423,21 @@ public class Analysis {
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
 			String department = (String) iterator.next();
 			printWriter.print("\"" + department + "\" : {\n");
-			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
+			List<String> employeeList;
+			if (isProxCardAnalysis) {
+				employeeList = dao.selectAllProxCardOfDepartment(department);
+			} else {
+				employeeList = dao.selectAllEmployeesOfDepartment(department);
+			}
 			String employeeListJson = gson.toJson(employeeList);
 			printWriter.print("\"employees\" : " + employeeListJson + ",\n");
 			printWriter.print("\"dates\" : {\n");
-			List<String> dateList = dao.selectDistinctDateForDepartment(department);
+			List<String> dateList;
+			if (isProxCardAnalysis) {
+				dateList = dao.selectDistinctDateForDepartmentProxCard(department);
+			} else {
+				dateList = dao.selectDistinctDateForDepartment(department);
+			}
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
 				printWriter.println("\"" + date + "\" : ");
@@ -426,7 +449,8 @@ public class Analysis {
 					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						matrixRow.add(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5));
+						matrixRow.add(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5,
+								"00:00:00"));
 					}
 					matrixRowList.add(matrixRow);
 				}
@@ -447,61 +471,76 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateAverageKLDPerDepartment(boolean isInnerJoin) throws SQLException, IOException {
-		List<String> departmentList = dao.selectAllDepartments();
-		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
-			String department = (String) iterator.next();
-			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
-			List<String> dateList = dao.selectDistinctDateForDepartment(department);
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				List<String> employeeList1 = new LinkedList<String>(employeeList);
-				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
-					String employee1 = (String) iterator3.next();
-					Double average = 0.0;
-					List<String> employeeList2 = new LinkedList<String>(employeeList);
-					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
-						String employee2 = (String) iterator4.next();
-						if (isInnerJoin) {
-							average += dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1, employee2, date);
-						} else {
-							average += dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date);
-						}
-					}
-					average /= employeeList.size() - 1;
-					if (isInnerJoin) {
-						dao.insertToSortedAverage("sorted_average_5", employee1, date, average);
-					} else {
-						dao.insertToSortedAverage("sorted_average_4", employee1, date, average);
-					}
-				}
-			}
-		}
-	}
-
-	public void calculateAverageKLDOfSortedHistogramPerDepartment() throws SQLException, IOException {
-		List<String> departmentList = dao.selectAllDepartments();
-		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
-			String department = (String) iterator.next();
-			List<String> employeeList = dao.selectAllEmployeesOfDepartment(department);
-			List<String> dateList = dao.selectDistinctDateForDepartment(department);
-			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
-				String date = (String) iterator2.next();
-				List<String> employeeList1 = new LinkedList<String>(employeeList);
-				for (Iterator<String> iterator3 = employeeList1.iterator(); iterator3.hasNext();) {
-					String employee1 = (String) iterator3.next();
-					Double average = 0.0;
-					List<String> employeeList2 = new LinkedList<String>(employeeList);
-					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
-						String employee2 = (String) iterator4.next();
-						average += dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5);
-					}
-					average /= employeeList.size() - 1;
-					dao.insertToSortedAverage("sorted_average_6", employee1, date, average);
-				}
-			}
-		}
-	}
+	// public void calculateAverageKLDPerDepartment(boolean isInnerJoin) throws
+	// SQLException, IOException {
+	// List<String> departmentList = dao.selectAllDepartments();
+	// for (Iterator<String> iterator = departmentList.iterator();
+	// iterator.hasNext();) {
+	// String department = (String) iterator.next();
+	// List<String> employeeList =
+	// dao.selectAllEmployeesOfDepartment(department);
+	// List<String> dateList = dao.selectDistinctDateForDepartment(department);
+	// for (Iterator<String> iterator2 = dateList.iterator();
+	// iterator2.hasNext();) {
+	// String date = (String) iterator2.next();
+	// List<String> employeeList1 = new LinkedList<String>(employeeList);
+	// for (Iterator<String> iterator3 = employeeList1.iterator();
+	// iterator3.hasNext();) {
+	// String employee1 = (String) iterator3.next();
+	// Double average = 0.0;
+	// List<String> employeeList2 = new LinkedList<String>(employeeList);
+	// for (Iterator<String> iterator4 = employeeList2.iterator();
+	// iterator4.hasNext();) {
+	// String employee2 = (String) iterator4.next();
+	// if (isInnerJoin) {
+	// average += dao.selectKLDOfTwoEmployeesOfDateInnerJoin(employee1,
+	// employee2, date, "00:00:00");
+	// } else {
+	// average += dao.selectKLDOfTwoEmployeesOfDate(employee1, employee2, date,
+	// "00:00:00");
+	// }
+	// }
+	// average /= employeeList.size() - 1;
+	// if (isInnerJoin) {
+	// dao.insertToSortedAverage("sorted_average_5", employee1, date, average);
+	// } else {
+	// dao.insertToSortedAverage("sorted_average_4", employee1, date, average);
+	// }
+	// }
+	// }
+	// }
+	// }
+	//
+	// public void calculateAverageKLDOfSortedHistogramPerDepartment() throws
+	// SQLException, IOException {
+	// List<String> departmentList = dao.selectAllDepartments();
+	// for (Iterator<String> iterator = departmentList.iterator();
+	// iterator.hasNext();) {
+	// String department = (String) iterator.next();
+	// List<String> employeeList =
+	// dao.selectAllEmployeesOfDepartment(department);
+	// List<String> dateList = dao.selectDistinctDateForDepartment(department);
+	// for (Iterator<String> iterator2 = dateList.iterator();
+	// iterator2.hasNext();) {
+	// String date = (String) iterator2.next();
+	// List<String> employeeList1 = new LinkedList<String>(employeeList);
+	// for (Iterator<String> iterator3 = employeeList1.iterator();
+	// iterator3.hasNext();) {
+	// String employee1 = (String) iterator3.next();
+	// Double average = 0.0;
+	// List<String> employeeList2 = new LinkedList<String>(employeeList);
+	// for (Iterator<String> iterator4 = employeeList2.iterator();
+	// iterator4.hasNext();) {
+	// String employee2 = (String) iterator4.next();
+	// average += dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1,
+	// employee2, date, 5, "00:00:00");
+	// }
+	// average /= employeeList.size() - 1;
+	// dao.insertToSortedAverage("sorted_average_6", employee1, date, average);
+	// }
+	// }
+	// }
+	// }
 
 	public void makeMatrixSymmetric(List<List<Double>> matrixRowList) {
 		for (int i = 0; i < matrixRowList.size(); i++) {
@@ -517,11 +556,19 @@ public class Analysis {
 			String date) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
+			Double largestValue = -999.0;
+			int largestIndex = -1;
 			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
-				average += matrixRowList.get(i).get(j);
+				Double matrixPointData = matrixRowList.get(i).get(j);
+				average += matrixPointData;
+				if (matrixPointData > largestValue) {
+					largestIndex = j;
+					largestValue = matrixPointData;
+				}
 			}
 			average /= matrixRowList.get(i).size() - 1;
-			dao.insertToSortedAverage(tableName, proxCardList.get(i), date, average);
+			dao.insertToSortedAverage(tableName, proxCardList.get(i), date, average, largestValue,
+					proxCardList.get(largestIndex), null);
 		}
 	}
 
@@ -529,11 +576,21 @@ public class Analysis {
 			List<String> dateList) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
+			Double largestValue = -999.0;
+			int largestIndex = -1;
 			for (int j = 0; j < matrixRowList.get(i).size(); j++) {
-				average += matrixRowList.get(i).get(j);
+				Double matrixPointData = matrixRowList.get(i).get(j);
+				average += matrixPointData;
+				if (matrixPointData > largestValue) {
+					largestIndex = j;
+					largestValue = matrixPointData;
+				}
 			}
-			average /= matrixRowList.get(i).size() - 1;
-			dao.insertToSortedAverage(tableName, proxCard, dateList.get(i), average);
+			if ((matrixRowList.get(i).size() - 1) > 0) {
+				average /= matrixRowList.get(i).size() - 1;
+			}
+			dao.insertToSortedAverage(tableName, proxCard, dateList.get(i), average, largestValue, null,
+					dateList.get(largestIndex));
 		}
 	}
 
@@ -561,7 +618,8 @@ public class Analysis {
 		for (Iterator<ProxSensorData> iterator = psdList.iterator(); iterator.hasNext();) {
 			ProxSensorData proxSensorData = (ProxSensorData) iterator.next();
 			System.out.println("proxCard: " + proxSensorData.getProxcard() + "\tdatetime: "
-					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability());
+					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability() + "\tproxCard2: "
+					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2() + "\tlargestValue: " + proxSensorData.getLargestValue());
 		}
 		System.out.println("===========================================");
 	}

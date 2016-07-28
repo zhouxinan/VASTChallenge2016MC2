@@ -20,6 +20,12 @@ public class ProxSensorData {
     private Double probability;
     
     private Double duration;
+    
+    private String proxcard2;
+    
+    private Date datetime2;
+    
+    private Double largestValue;
 
     public Double getProbability() {
 		return probability;
@@ -91,5 +97,29 @@ public class ProxSensorData {
 
 	public void setDuration(Double duration) {
 		this.duration = duration;
+	}
+
+	public String getProxcard2() {
+		return proxcard2;
+	}
+
+	public void setProxcard2(String proxcard2) {
+		this.proxcard2 = proxcard2;
+	}
+
+	public Date getDatetime2() {
+		return datetime2;
+	}
+
+	public void setDatetime2(Date datetime2) {
+		this.datetime2 = datetime2;
+	}
+
+	public Double getLargestValue() {
+		return largestValue;
+	}
+
+	public void setLargestValue(Double largestValue) {
+		this.largestValue = largestValue;
 	}
 }

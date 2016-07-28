@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class RunAnalysis {
 	public static void main(String[] args) throws SQLException, IOException {
 		Analysis analysis = new Analysis();
-//		analysis.buildDailyDataTable2();
+//		analysis.buildDailyDataTable();
 //		analysis.calculateKLDPerPerson(true, true);
 //		analysis.calculateKLDPerPerson(false, true);
 //		analysis.calculateKLDOfSortedHistogramPerPerson(true);
@@ -15,7 +15,7 @@ public class RunAnalysis {
 //		analysis.calculateAverageKLDOfSortedHistogramPerDayPerPerson();
 //		analysis.calculateKLDPerDepartment(true, true);
 //		analysis.calculateKLDPerDepartment(false, true);
-//		analysis.calculateKLDOfSortedHistogramPerDepartment(true);
+//		analysis.calculateKLDOfSortedHistogramPerDepartment(true, true);
 //		analysis.calculateAverageKLDPerDepartment(true);
 //		analysis.calculateAverageKLDPerDepartment(false);
 //		analysis.calculateAverageKLDOfSortedHistogramPerDepartment();
@@ -26,7 +26,7 @@ public class RunAnalysis {
 //		analysis.reportSortedAverage(10, "sorted_average_5");
 //		analysis.reportSortedAverage(10, "sorted_average_6");
 //		analysis.divideSection();
-		analysis.calculateKLDBySectionPerPerson(true, true);
-		analysis.calculateKLDBySectionPerPerson(false, true);
+//		analysis.calculateKLDBySectionPerPerson(true, true);
+//		analysis.calculateKLDBySectionPerPerson(false, true);
 	}
 }
