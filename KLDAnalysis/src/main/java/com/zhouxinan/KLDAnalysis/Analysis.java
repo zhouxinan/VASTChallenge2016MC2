@@ -423,21 +423,17 @@ public class Analysis {
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
 			String department = (String) iterator.next();
 			printWriter.print("\"" + department + "\" : {\n");
-			List<String> employeeList;
+			List<String> employeeList, dateList;
 			if (isProxCardAnalysis) {
 				employeeList = dao.selectAllProxCardOfDepartment(department);
+				dateList = dao.selectDistinctDateForDepartmentProxCard(department);
 			} else {
 				employeeList = dao.selectAllEmployeesOfDepartment(department);
+				dateList = dao.selectDistinctDateForDepartment(department);
 			}
 			String employeeListJson = gson.toJson(employeeList);
 			printWriter.print("\"employees\" : " + employeeListJson + ",\n");
 			printWriter.print("\"dates\" : {\n");
-			List<String> dateList;
-			if (isProxCardAnalysis) {
-				dateList = dao.selectDistinctDateForDepartmentProxCard(department);
-			} else {
-				dateList = dao.selectDistinctDateForDepartment(department);
-			}
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
 				printWriter.println("\"" + date + "\" : ");
@@ -619,7 +615,8 @@ public class Analysis {
 			ProxSensorData proxSensorData = (ProxSensorData) iterator.next();
 			System.out.println("proxCard: " + proxSensorData.getProxcard() + "\tdatetime: "
 					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability() + "\tproxCard2: "
-					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2() + "\tlargestValue: " + proxSensorData.getLargestValue());
+					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2()
+					+ "\tlargestValue: " + proxSensorData.getLargestValue());
 		}
 		System.out.println("===========================================");
 	}
