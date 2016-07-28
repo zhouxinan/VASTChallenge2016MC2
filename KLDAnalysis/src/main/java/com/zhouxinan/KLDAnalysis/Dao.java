@@ -434,6 +434,41 @@ public class Dao {
 		}
 	}
 
+	public Double selectJSDOfTwoDatesOfProxCard(String proxCard, String date1, String date2, String time,
+			String tableName) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql = "SELECT (sum(a_prob*(log2(a_prob)-log2(m_prob))) + sum(b_prob*(log2(b_prob)-log2(m_prob))))/2  as JSD from (SELECT ifnull(A.probability, 0.00000001) as a_prob, ifnull(B.probability, 0.00000001) as b_prob, (ifnull(A.probability, 0.00000001)+ifnull(B.probability, 0.00000001))/2 as m_prob from ((select * from "
+					+ tableName + " where datetime='" + date1 + " " + time + "' and proxCard = '" + proxCard
+					+ "') as A left join (SELECT * from " + tableName + " where datetime='" + date2 + " " + time
+					+ "' and proxCard = '" + proxCard
+					+ "') as B on A.floor = B.floor and A.zone = B.zone) UNION SELECT ifnull(C.probability, 0.00000001) as a_prob, ifnull(D.probability, 0.00000001) as b_prob, (ifnull(C.probability, 0.00000001)+ifnull(D.probability, 0.00000001))/2 as m_prob from ((select * from "
+					+ tableName + " where datetime='" + date1 + " " + time + "' and proxCard = '" + proxCard
+					+ "') as C right join (SELECT * from " + tableName + " where datetime='" + date2 + " " + time
+					+ "' and proxCard = '" + proxCard + "') as D on C.floor = D.floor and C.zone = D.zone)) as E";
+			results = sm.executeQuery(sql);
+			if (results.next()) {
+				return results.getDouble("JSD");
+			}
+			return null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
 	public Double selectKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2, String time,
 			String tableName) throws SQLException {
 		Connection con = null;
@@ -803,12 +838,14 @@ public class Dao {
 		return null;
 	}
 
-	public void insertToSortedAverage(String table, String proxCard, String date, Double average, Double largestValue, String proxCard2, String datetime2) throws SQLException {
+	public void insertToSortedAverage(String table, String proxCard, String date, Double average, Double largestValue,
+			String proxCard2, String datetime2) throws SQLException {
 		Connection con = null;
 		PreparedStatement ps = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
-			String sql = "insert into " + table + "(proxCard, datetime, average, largestValue, proxCard2, datetime2) values(?,?,?,?,?,?)";
+			String sql = "insert into " + table
+					+ "(proxCard, datetime, average, largestValue, proxCard2, datetime2) values(?,?,?,?,?,?)";
 			ps = con.prepareStatement(sql);
 			ps.setString(1, proxCard);
 			ps.setString(2, date + " 00:00:00");

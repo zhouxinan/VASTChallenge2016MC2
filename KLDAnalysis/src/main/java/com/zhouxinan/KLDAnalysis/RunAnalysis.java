@@ -7,8 +7,7 @@ public class RunAnalysis {
 	public static void main(String[] args) throws SQLException, IOException {
 		Analysis analysis = new Analysis();
 //		analysis.buildDailyDataTable();
-//		analysis.calculateKLDPerPerson(true, true);
-//		analysis.calculateKLDPerPerson(false, true);
+		analysis.calculateKLDPerPerson(3, true);
 //		analysis.calculateKLDOfSortedHistogramPerPerson(true);
 //		analysis.calculateAverageKLDPerDayPerPerson(true);
 //		analysis.calculateAverageKLDPerDayPerPerson(false);

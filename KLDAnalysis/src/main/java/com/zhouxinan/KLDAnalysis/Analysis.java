@@ -144,14 +144,20 @@ public class Analysis {
 		}
 	}
 
-	public void calculateKLDPerPerson(boolean isInnerJoin, boolean isMatrixSymmetrical)
+	public void calculateKLDPerPerson(int mode, boolean isMatrixSymmetrical)
 			throws SQLException, FileNotFoundException {
 		Gson gson = new Gson();
-		String fileName;
-		if (isInnerJoin) {
+		String fileName = "";
+		switch (mode) {
+		case 1:
 			fileName = "EmployeeByDayComparisons.json";
-		} else {
+			break;
+		case 2:
 			fileName = "EmployeeByDayComparisonsApprox.json";
+			break;
+		case 3:
+			fileName = "EmployeeByDayComparisonsJSD.json";
+			break;
 		}
 		File file = new File(fileName);
 		PrintWriter printWriter = new PrintWriter(file);
@@ -171,12 +177,19 @@ public class Analysis {
 				List<String> dateList2 = dao.selectDistinctDateOfProxCard(proxCard);
 				for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 					String date2 = (String) iterator3.next();
-					if (isInnerJoin) {
+					switch (mode) {
+					case 1:
 						matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2, "00:00:00",
 								"daily_data"));
-					} else {
+						break;
+					case 2:
 						matrixRow.add(
 								dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, "00:00:00", "daily_data"));
+						break;
+					case 3:
+						matrixRow.add(
+								dao.selectJSDOfTwoDatesOfProxCard(proxCard, date, date2, "00:00:00", "daily_data"));
+						break;
 					}
 				}
 				matrixRowList.add(matrixRow);
@@ -185,10 +198,16 @@ public class Analysis {
 				makeMatrixSymmetric(matrixRowList);
 			}
 			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
-			if (isInnerJoin) {
+			switch (mode) {
+			case 1:
 				calculateAveragePerRow2(matrixRowList, "sorted_average_2", proxCard, dateList);
-			} else {
+				break;
+			case 2:
 				calculateAveragePerRow2(matrixRowList, "sorted_average", proxCard, dateList);
+				break;
+			case 3:
+				calculateAveragePerRow2(matrixRowList, "sorted_average_7", proxCard, dateList);
+				break;
 			}
 			if (iterator.hasNext()) {
 				printWriter.println(",");
