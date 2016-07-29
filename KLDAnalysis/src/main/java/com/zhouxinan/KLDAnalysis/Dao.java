@@ -895,7 +895,7 @@ public class Dao {
 	}
 
 	public void insertToSortedAverage(String table, String proxCard, String date, Double average, Double largestValue,
-			String proxCard2, String datetime2) throws SQLException {
+			String proxCard2, String datetime2, String time) throws SQLException {
 		Connection con = null;
 		PreparedStatement ps = null;
 		try {
@@ -904,11 +904,11 @@ public class Dao {
 					+ "(proxCard, datetime, average, largestValue, proxCard2, datetime2) values(?,?,?,?,?,?)";
 			ps = con.prepareStatement(sql);
 			ps.setString(1, proxCard);
-			ps.setString(2, date + " 00:00:00");
+			ps.setString(2, date + " " + time);
 			ps.setDouble(3, average);
 			ps.setDouble(4, largestValue);
 			ps.setString(5, proxCard2);
-			ps.setString(6, datetime2);
+			ps.setString(6, datetime2 + " " + time);
 			ps.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

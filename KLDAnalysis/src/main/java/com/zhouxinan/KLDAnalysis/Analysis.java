@@ -200,13 +200,13 @@ public class Analysis {
 			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
 			switch (mode) {
 			case 1:
-				calculateAveragePerRow2(matrixRowList, "sorted_average_2", proxCard, dateList);
+				calculateAveragePerRow2(matrixRowList, "sorted_average_2", proxCard, dateList, "00:00:00");
 				break;
 			case 2:
-				calculateAveragePerRow2(matrixRowList, "sorted_average", proxCard, dateList);
+				calculateAveragePerRow2(matrixRowList, "sorted_average", proxCard, dateList, "00:00:00");
 				break;
 			case 3:
-				calculateAveragePerRow2(matrixRowList, "sorted_average_7", proxCard, dateList);
+				calculateAveragePerRow2(matrixRowList, "sorted_average_7", proxCard, dateList, "00:00:00");
 				break;
 			}
 			if (iterator.hasNext()) {
@@ -313,7 +313,7 @@ public class Analysis {
 				makeMatrixSymmetric(matrixRowList);
 			}
 			printWriter.println(gson.toJson(roundMatrixRowList(matrixRowList)) + "}");
-			calculateAveragePerRow2(matrixRowList, "sorted_average_3", proxCard, dateList);
+			calculateAveragePerRow2(matrixRowList, "sorted_average_3", proxCard, dateList, "00:00:00");
 			if (iterator.hasNext()) {
 				printWriter.println(",");
 			}
@@ -425,9 +425,9 @@ public class Analysis {
 				}
 				printWriter.print(gson.toJson(roundMatrixRowList(matrixRowList)));
 				if (isInnerJoin) {
-					calculateAveragePerRow(matrixRowList, "sorted_average_5", employeeList1, date);
+					calculateAveragePerRow(matrixRowList, "sorted_average_5", employeeList1, date, "00:00:00");
 				} else {
-					calculateAveragePerRow(matrixRowList, "sorted_average_4", employeeList1, date);
+					calculateAveragePerRow(matrixRowList, "sorted_average_4", employeeList1, date, "00:00:00");
 				}
 				if (iterator2.hasNext()) {
 					printWriter.println(",");
@@ -501,10 +501,10 @@ public class Analysis {
 				printWriter.print(gson.toJson(roundMatrixRowList(matrixRowList)));
 				switch (mode) {
 				case 1:
-					calculateAveragePerRow(matrixRowList, "sorted_average_6", employeeList1, date);
+					calculateAveragePerRow(matrixRowList, "sorted_average_6", employeeList1, date, "00:00:00");
 					break;
 				case 2:
-					calculateAveragePerRow(matrixRowList, "sorted_average_9", employeeList1, date);
+					calculateAveragePerRow(matrixRowList, "sorted_average_9", employeeList1, date, "00:00:00");
 					break;
 				}
 				if (iterator2.hasNext()) {
@@ -601,7 +601,7 @@ public class Analysis {
 	}
 
 	public void calculateAveragePerRow(List<List<Double>> matrixRowList, String tableName, List<String> proxCardList,
-			String date) throws SQLException {
+			String date, String time) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
 			Double largestValue = -999.0;
@@ -616,12 +616,12 @@ public class Analysis {
 			}
 			average /= matrixRowList.get(i).size() - 1;
 			dao.insertToSortedAverage(tableName, proxCardList.get(i), date, average, largestValue,
-					proxCardList.get(largestIndex), null);
+					proxCardList.get(largestIndex), null, time);
 		}
 	}
 
 	public void calculateAveragePerRow2(List<List<Double>> matrixRowList, String tableName, String proxCard,
-			List<String> dateList) throws SQLException {
+			List<String> dateList, String time) throws SQLException {
 		for (int i = 0; i < matrixRowList.size(); i++) {
 			Double average = 0.0;
 			Double largestValue = -999.0;
@@ -638,7 +638,7 @@ public class Analysis {
 				average /= matrixRowList.get(i).size() - 1;
 			}
 			dao.insertToSortedAverage(tableName, proxCard, dateList.get(i), average, largestValue, null,
-					dateList.get(largestIndex));
+					dateList.get(largestIndex), time);
 		}
 	}
 
