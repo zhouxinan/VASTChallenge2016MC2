@@ -557,15 +557,16 @@ public class Dao {
 		return null;
 	}
 
-	public List<String> selectAllProxCardOfDepartment(String department) throws SQLException {
+	public List<String> selectAllProxCardOfDepartment(String department, String tableName) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
 		try {
 			con = DriverManager.getConnection(url, dbUsername, dbPassword);
 			sm = con.createStatement();
-			String sql = "select distinct proxCard from daily_data as B inner join (select * from employee where department = '"
-					+ department + "') as A on substring(proxCard, 1, length(proxCard) - 3) = A.name";
+			String sql = "select distinct proxCard from " + tableName
+					+ " as B inner join (select * from employee where department = '" + department
+					+ "') as A on substring(proxCard, 1, length(proxCard) - 3) = A.name";
 			results = sm.executeQuery(sql);
 			List<String> employeeList = new LinkedList<String>();
 			while (results.next()) {

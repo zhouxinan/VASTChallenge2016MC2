@@ -20,6 +20,7 @@ public class Analysis {
 	Dao dao = Dao.getInstance();
 	List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
 	List<String> endTimeList = Arrays.asList("05:59:59", "11:59:59", "17:59:59", "23:59:59");
+	int hours[] = { 0, 6, 12, 18 };
 
 	public void buildDailyDataTable() throws SQLException {
 		List<String> proxCardList = dao.selectAllProxCard();
@@ -218,8 +219,6 @@ public class Analysis {
 
 	public void calculateKLDBySectionPerPerson(boolean isInnerJoin, boolean isMatrixSymmetrical)
 			throws SQLException, FileNotFoundException {
-		int hours[] = { 0, 6, 12, 18 };
-		List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
 		for (int i = 0; i < hours.length; i++) {
 			Gson gson = new Gson();
 			String fileName;
@@ -460,7 +459,7 @@ public class Analysis {
 			printWriter.print("\"" + department + "\" : {\n");
 			List<String> employeeList, dateList;
 			if (isProxCardAnalysis) {
-				employeeList = dao.selectAllProxCardOfDepartment(department);
+				employeeList = dao.selectAllProxCardOfDepartment(department, "daily_data");
 				dateList = dao.selectDistinctDateForDepartmentProxCard(department);
 			} else {
 				employeeList = dao.selectAllEmployeesOfDepartment(department);
@@ -660,7 +659,7 @@ public class Analysis {
 		}
 	}
 
-	public void reportSortedAverage(int limit, String tableName, String fileName)
+	public void reportSortedAverage(int limit, String tableName, String fileName, boolean isReportingSection)
 			throws SQLException, FileNotFoundException {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat df2 = new SimpleDateFormat("HH:mm:ss");
@@ -674,9 +673,17 @@ public class Analysis {
 					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability() + "\tproxCard2: "
 					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2()
 					+ "\tlargestValue: " + proxSensorData.getLargestValue());
-			List<ProxSensorData> psdList2 = dao.selectByProxCardAndDate(proxSensorData.getProxcard(),
-					df.format(proxSensorData.getDatetime()), df2.format(proxSensorData.getDatetime()),
-					df2.format(new Date(proxSensorData.getDatetime().getTime() + 21599 * 1000)));
+
+			List<ProxSensorData> psdList2;
+			if (isReportingSection) {
+				psdList2 = dao.selectByProxCardAndDate(proxSensorData.getProxcard(),
+						df.format(proxSensorData.getDatetime()), df2.format(proxSensorData.getDatetime()),
+						df2.format(new Date(proxSensorData.getDatetime().getTime() + 21599 * 1000)));
+			} else {
+				psdList2 = dao.selectByProxCardAndDate(proxSensorData.getProxcard(),
+						df.format(proxSensorData.getDatetime()), df2.format(proxSensorData.getDatetime()),
+						df2.format(new Date(proxSensorData.getDatetime().getTime() + 86399 * 1000)));
+			}
 			if (psdList2.size() == 0) {
 				continue;
 			}
