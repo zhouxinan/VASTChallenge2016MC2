@@ -791,6 +791,62 @@ public class Dao {
 		return null;
 	}
 
+	public Double selectSortedHistogramJSDOfTwoEmployeesOfDate(String employee1, String employee2, String date,
+			int listSizeLimit, String time) throws SQLException {
+		Connection con = null;
+		Statement sm = null;
+		ResultSet results = null;
+		try {
+			con = DriverManager.getConnection(url, dbUsername, dbPassword);
+			sm = con.createStatement();
+			String sql1 = "SELECT * from daily_data where datetime='" + date + " " + time + "' and proxCard = '"
+					+ employee1 + "' ORDER BY duration DESC";
+			results = sm.executeQuery(sql1);
+			List<Double> list1 = new LinkedList<Double>();
+			while (results.next()) {
+				list1.add(results.getDouble("probability"));
+			}
+			results.close();
+			String sql2 = "SELECT * from daily_data where datetime='" + date + " " + time + "' and proxCard = '"
+					+ employee2 + "' ORDER BY duration DESC";
+			results = sm.executeQuery(sql2);
+			List<Double> list2 = new LinkedList<Double>();
+			while (results.next()) {
+				list2.add(results.getDouble("probability"));
+			}
+			results.close();
+			Double JSD = 0.0;
+//			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
+//			if (smallerListSize > listSizeLimit) {
+//				smallerListSize = listSizeLimit;
+//			}
+			int largerListSize = (list1.size() < list2.size()) ? list2.size() : list1.size();
+			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
+			List<Double> smallerList = (list1.size() < list2.size()) ? list1 : list2;
+			for (int i = 0; i < largerListSize - smallerListSize; i++) {
+				smallerList.add(0.00000001);
+			}
+			for (int i = 0; i < largerListSize; i++) {
+				Double m_probability = (list1.get(i) + list2.get(i)) / 2;
+				Double KLD_P_M = list1.get(i) * ((Math.log(list1.get(i)) - Math.log(m_probability)) / Math.log(2));
+				Double KLD_Q_M = list2.get(i) * ((Math.log(list2.get(i)) - Math.log(m_probability)) / Math.log(2));
+				JSD += (KLD_P_M + KLD_Q_M) / 2;
+			}
+			return JSD;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (sm != null) {
+				sm.close();
+			}
+			if (con != null) {
+				con.close();
+			}
+		}
+		return null;
+	}
+
 	public Double selectSortedHistogramKLDOfTwoDatesOfProxCard(String proxCard, String date1, String date2,
 			int listSizeLimit, String time) throws SQLException {
 		Connection con = null;
@@ -882,9 +938,9 @@ public class Dao {
 				psd.setProxcard(results.getString("proxCard"));
 				psd.setDatetime(results.getDate("datetime"));
 				psd.setProbability(results.getDouble("average"));
+				psd.setLargestValue(results.getDouble("largestValue"));
 				psd.setProxcard2(results.getString("proxCard2"));
 				psd.setDatetime2(results.getDate("datetime2"));
-				psd.setLargestValue(results.getDouble("largestValue"));
 				list.add(psd);
 			}
 			return list;

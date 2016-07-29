@@ -433,10 +433,19 @@ public class Analysis {
 		printWriter.close();
 	}
 
-	public void calculateKLDOfSortedHistogramPerDepartment(boolean isMatrixSymmetrical, boolean isProxCardAnalysis)
-			throws SQLException, IOException {
+	public void calculateKLDOfSortedHistogramPerDepartment(int mode, boolean isMatrixSymmetrical,
+			boolean isProxCardAnalysis) throws SQLException, IOException {
 		Gson gson = new Gson();
-		File file = new File("DepartmentComparisonsSortedHistogram.json");
+		String fileName = "";
+		switch (mode) {
+		case 1:
+			fileName = "DepartmentComparisonsSortedHistogramKLD.json";
+			break;
+		case 2:
+			fileName = "DepartmentComparisonsSortedHistogramJSD.json";
+			break;
+		}
+		File file = new File(fileName);
 		PrintWriter printWriter = new PrintWriter(file);
 		List<String> departmentList = dao.selectAllDepartments();
 		for (Iterator<String> iterator = departmentList.iterator(); iterator.hasNext();) {
@@ -464,8 +473,17 @@ public class Analysis {
 					List<String> employeeList2 = new LinkedList<String>(employeeList);
 					for (Iterator<String> iterator4 = employeeList2.iterator(); iterator4.hasNext();) {
 						String employee2 = (String) iterator4.next();
-						matrixRow.add(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date, 5,
-								"00:00:00"));
+						switch (mode) {
+						case 1:
+							matrixRow.add(dao.selectSortedHistogramKLDOfTwoEmployeesOfDate(employee1, employee2, date,
+									5, "00:00:00"));
+							break;
+						case 2:
+							matrixRow.add(dao.selectSortedHistogramJSDOfTwoEmployeesOfDate(employee1, employee2, date,
+									5, "00:00:00"));
+							break;
+						}
+
 					}
 					matrixRowList.add(matrixRow);
 				}
@@ -473,7 +491,14 @@ public class Analysis {
 					makeMatrixSymmetric(matrixRowList);
 				}
 				printWriter.print(gson.toJson(roundMatrixRowList(matrixRowList)));
-				calculateAveragePerRow(matrixRowList, "sorted_average_6", employeeList1, date);
+				switch (mode) {
+				case 1:
+					calculateAveragePerRow(matrixRowList, "sorted_average_6", employeeList1, date);
+					break;
+				case 2:
+					calculateAveragePerRow(matrixRowList, "sorted_average_9", employeeList1, date);
+					break;
+				}
 				if (iterator2.hasNext()) {
 					printWriter.println(",");
 				}
@@ -628,7 +653,12 @@ public class Analysis {
 		}
 	}
 
-	public void reportSortedAverage(int limit, String tableName) throws SQLException {
+	public void reportSortedAverage(int limit, String tableName, String fileName)
+			throws SQLException, FileNotFoundException {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Gson gson = new Gson();
+		File file = new File(fileName);
+		PrintWriter printWriter = new PrintWriter(file);
 		List<ProxSensorData> psdList = dao.selectFromSortedAverage(limit, tableName);
 		for (Iterator<ProxSensorData> iterator = psdList.iterator(); iterator.hasNext();) {
 			ProxSensorData proxSensorData = (ProxSensorData) iterator.next();
@@ -636,7 +666,22 @@ public class Analysis {
 					+ proxSensorData.getDatetime() + "\taverage: " + proxSensorData.getProbability() + "\tproxCard2: "
 					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2()
 					+ "\tlargestValue: " + proxSensorData.getLargestValue());
+			List<ProxSensorData> psdList2 = dao.selectByProxCardAndDate(proxSensorData.getProxcard(),
+					df.format(proxSensorData.getDatetime()));
+			if (psdList2.size() == 0) {
+				continue;
+			}
+			List<Double> offsetList = Arrays.asList(psdList2.get(0).getOffset(),
+					psdList2.get(psdList2.size() - 1).getOffset());
+			printWriter.print("{\"offsets\":");
+			printWriter.print(gson.toJson(offsetList) + ",\n");
+			printWriter.print("\"employee\":\"" + proxSensorData.getProxcard() + "\"\n");
+			printWriter.println("}");
+			if (iterator.hasNext()) {
+				printWriter.println(",");
+			}
 		}
 		System.out.println("===========================================");
+		printWriter.close();
 	}
 }
