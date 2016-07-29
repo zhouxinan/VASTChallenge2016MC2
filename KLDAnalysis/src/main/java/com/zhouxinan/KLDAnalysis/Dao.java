@@ -212,40 +212,6 @@ public class Dao {
 		return null;
 	}
 
-	public List<ProxSensorData> selectByProxCardAndDate(String proxCard, String date) throws SQLException {
-		Connection con = null;
-		Statement sm = null;
-		ResultSet results = null;
-		try {
-			con = DriverManager.getConnection(url, dbUsername, dbPassword);
-			sm = con.createStatement();
-			String sql = "SELECT * FROM prox_sensor_data WHERE datetime BETWEEN '" + date + " 00:00:00' AND '" + date
-					+ " 23:59:59' and proxCard = '" + proxCard + "' order by offset asc;";
-			results = sm.executeQuery(sql);
-			List<ProxSensorData> psdList = new LinkedList<ProxSensorData>();
-			while (results.next()) {
-				ProxSensorData psd = new ProxSensorData();
-				psd.setFloor(results.getInt("floor"));
-				psd.setZone(results.getString("zone"));
-				psd.setOffset(results.getDouble("offset"));
-				psd.setDatetime(results.getTimestamp("datetime"));
-				psdList.add(psd);
-			}
-			return psdList;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (sm != null) {
-				sm.close();
-			}
-			if (con != null) {
-				con.close();
-			}
-		}
-		return null;
-	}
-
 	public List<ProxSensorData> selectByProxCardAndDate(String proxCard, String date, String startTime, String endTime)
 			throws SQLException {
 		Connection con = null;
@@ -281,8 +247,8 @@ public class Dao {
 		return null;
 	}
 
-	public List<ProxSensorData> selectByProxCardAndDateAndTimeFromDailyData2(String proxCard, String date, String startTime,
-			String endTime) throws SQLException {
+	public List<ProxSensorData> selectByProxCardAndDateAndTimeFromDailyData2(String proxCard, String date,
+			String startTime, String endTime) throws SQLException {
 		Connection con = null;
 		Statement sm = null;
 		ResultSet results = null;
@@ -816,10 +782,11 @@ public class Dao {
 			}
 			results.close();
 			Double JSD = 0.0;
-//			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
-//			if (smallerListSize > listSizeLimit) {
-//				smallerListSize = listSizeLimit;
-//			}
+			// int smallerListSize = (list1.size() < list2.size()) ?
+			// list1.size() : list2.size();
+			// if (smallerListSize > listSizeLimit) {
+			// smallerListSize = listSizeLimit;
+			// }
 			int largerListSize = (list1.size() < list2.size()) ? list2.size() : list1.size();
 			int smallerListSize = (list1.size() < list2.size()) ? list1.size() : list2.size();
 			List<Double> smallerList = (list1.size() < list2.size()) ? list1 : list2;
@@ -936,11 +903,11 @@ public class Dao {
 			while (results.next()) {
 				ProxSensorData psd = new ProxSensorData();
 				psd.setProxcard(results.getString("proxCard"));
-				psd.setDatetime(results.getDate("datetime"));
+				psd.setDatetime(results.getTimestamp("datetime"));
 				psd.setProbability(results.getDouble("average"));
 				psd.setLargestValue(results.getDouble("largestValue"));
 				psd.setProxcard2(results.getString("proxCard2"));
-				psd.setDatetime2(results.getDate("datetime2"));
+				psd.setDatetime2(results.getTimestamp("datetime2"));
 				list.add(psd);
 			}
 			return list;

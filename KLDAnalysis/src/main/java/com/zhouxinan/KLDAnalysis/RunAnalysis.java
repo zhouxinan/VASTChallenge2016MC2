@@ -25,8 +25,8 @@ public class RunAnalysis {
 //		analysis.reportSortedAverage(10, "sorted_average_5");
 //		analysis.reportSortedAverage(20, "sorted_average_7", "EmployeeByDayComparisonsJSDReport.json");
 //		analysis.reportSortedAverage(80, "sorted_average_9", "DepartmentComparisonsSortedHistogramJSDReport.json");
+		analysis.reportSortedAverage(100, "sorted_average_10", "EmployeeByHourComparisonsJSDReport.json");
 //		analysis.divideSection();
-		analysis.calculateKLDBySectionPerPerson(true, true);
-//		analysis.calculateKLDBySectionPerPerson(false, true);
+//		analysis.calculateKLDBySectionPerPerson(true, true);
 	}
 }

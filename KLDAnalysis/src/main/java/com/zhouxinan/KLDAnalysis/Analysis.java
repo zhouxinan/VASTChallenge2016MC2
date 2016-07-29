@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 
 public class Analysis {
 	Dao dao = Dao.getInstance();
+	List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
+	List<String> endTimeList = Arrays.asList("05:59:59", "11:59:59", "17:59:59", "23:59:59");
 
 	public void buildDailyDataTable() throws SQLException {
 		List<String> proxCardList = dao.selectAllProxCard();
@@ -26,7 +28,7 @@ public class Analysis {
 			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
-				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date);
+				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date, "00:00:00", "23:59:59");
 				/*
 				 * The following 3 lines of code run with no result, which
 				 * proves the validity of the following algorithm.
@@ -61,7 +63,7 @@ public class Analysis {
 			List<String> dateList = dao.selectDistinctDateOfProxCard(proxCard);
 			for (Iterator<String> iterator2 = dateList.iterator(); iterator2.hasNext();) {
 				String date = (String) iterator2.next();
-				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date);
+				List<ProxSensorData> psdList = dao.selectByProxCardAndDate(proxCard, date, "00:00:00", "23:59:59");
 				/*
 				 * The following 3 lines of code run with no result, which
 				 * proves the validity of the following algorithm.
@@ -98,8 +100,6 @@ public class Analysis {
 				String date = (String) iterator2.next();
 				System.out.println("proxCard: " + proxCard + " date: " + date);
 				List<List<ProxSensorData>> psdListArray = new ArrayList<List<ProxSensorData>>();
-				List<String> startTimeList = Arrays.asList("00:00:00", "06:00:00", "12:00:00", "18:00:00");
-				List<String> endTimeList = Arrays.asList("05:59:59", "11:59:59", "17:59:59", "23:59:59");
 				int sectionCount = startTimeList.size();
 				for (int i = 0; i < sectionCount; i++) {
 					psdListArray.add(dao.selectByProxCardAndDateAndTimeFromDailyData2(proxCard, date,
@@ -273,8 +273,7 @@ public class Analysis {
 				// calculateAveragePerRow2(matrixRowList, "sorted_average",
 				// proxCard, dateList);
 				// }
-				// calculateAveragePerRow2(matrixRowList, "sorted_average_10",
-				// proxCard, dateList);
+				calculateAveragePerRow2(matrixRowList, "sorted_average_10", proxCard, dateList, startTimeList.get(i));
 				if (iterator.hasNext()) {
 					printWriter.println(",");
 				}
@@ -664,6 +663,7 @@ public class Analysis {
 	public void reportSortedAverage(int limit, String tableName, String fileName)
 			throws SQLException, FileNotFoundException {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat df2 = new SimpleDateFormat("HH:mm:ss");
 		Gson gson = new Gson();
 		File file = new File(fileName);
 		PrintWriter printWriter = new PrintWriter(file);
@@ -675,7 +675,8 @@ public class Analysis {
 					+ proxSensorData.getProxcard2() + "\tdatetime2: " + proxSensorData.getDatetime2()
 					+ "\tlargestValue: " + proxSensorData.getLargestValue());
 			List<ProxSensorData> psdList2 = dao.selectByProxCardAndDate(proxSensorData.getProxcard(),
-					df.format(proxSensorData.getDatetime()));
+					df.format(proxSensorData.getDatetime()), df2.format(proxSensorData.getDatetime()),
+					df2.format(new Date(proxSensorData.getDatetime().getTime() + 21599 * 1000)));
 			if (psdList2.size() == 0) {
 				continue;
 			}
