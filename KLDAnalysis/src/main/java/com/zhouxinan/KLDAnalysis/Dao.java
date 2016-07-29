@@ -281,7 +281,7 @@ public class Dao {
 		return null;
 	}
 
-	public List<ProxSensorData> selectByProxCardAndDateFromDailyData2(String proxCard, String date, String startTime,
+	public List<ProxSensorData> selectByProxCardAndDateAndTimeFromDailyData2(String proxCard, String date, String startTime,
 			String endTime) throws SQLException {
 		Connection con = null;
 		Statement sm = null;

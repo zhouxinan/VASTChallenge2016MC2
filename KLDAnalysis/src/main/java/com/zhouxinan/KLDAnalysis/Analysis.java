@@ -102,8 +102,8 @@ public class Analysis {
 				List<String> endTimeList = Arrays.asList("05:59:59", "11:59:59", "17:59:59", "23:59:59");
 				int sectionCount = startTimeList.size();
 				for (int i = 0; i < sectionCount; i++) {
-					psdListArray.add(dao.selectByProxCardAndDateFromDailyData2(proxCard, date, startTimeList.get(i),
-							endTimeList.get(i)));
+					psdListArray.add(dao.selectByProxCardAndDateAndTimeFromDailyData2(proxCard, date,
+							startTimeList.get(i), endTimeList.get(i)));
 				}
 				try {
 					for (int i = 0; i < sectionCount; i++) {
@@ -223,11 +223,13 @@ public class Analysis {
 		for (int i = 0; i < hours.length; i++) {
 			Gson gson = new Gson();
 			String fileName;
-			if (isInnerJoin) {
-				fileName = "EmployeeByHour" + hours[i] + "Comparisons.json";
-			} else {
-				fileName = "EmployeeByHour" + hours[i] + "ComparisonsApprox.json";
-			}
+			// if (isInnerJoin) {
+			// fileName = "EmployeeByHour" + hours[i] + "Comparisons.json";
+			// } else {
+			// fileName = "EmployeeByHour" + hours[i] +
+			// "ComparisonsApprox.json";
+			// }
+			fileName = "EmployeeByHour" + hours[i] + "ComparisonsJSD.json";
 			File file = new File(fileName);
 			PrintWriter printWriter = new PrintWriter(file);
 			List<String> proxCardList = dao.selectAllProxCardByHour(hours[i]);
@@ -246,13 +248,17 @@ public class Analysis {
 					List<String> dateList2 = dao.selectDistinctDateOfProxCardAndHour(proxCard, hours[i]);
 					for (Iterator<String> iterator3 = dateList2.iterator(); iterator3.hasNext();) {
 						String date2 = (String) iterator3.next();
-						if (isInnerJoin) {
-							matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard, date, date2,
-									startTimeList.get(i), "daily_data_by_section"));
-						} else {
-							matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard, date, date2, startTimeList.get(i),
-									"daily_data_by_section"));
-						}
+						// if (isInnerJoin) {
+						// matrixRow.add(dao.selectKLDOfTwoDatesOfProxCardInnerJoin(proxCard,
+						// date, date2,
+						// startTimeList.get(i), "daily_data_by_section"));
+						// } else {
+						// matrixRow.add(dao.selectKLDOfTwoDatesOfProxCard(proxCard,
+						// date, date2, startTimeList.get(i),
+						// "daily_data_by_section"));
+						// }
+						matrixRow.add(dao.selectJSDOfTwoDatesOfProxCard(proxCard, date, date2, startTimeList.get(i),
+								"daily_data_by_section"));
 					}
 					matrixRowList.add(matrixRow);
 				}
@@ -267,6 +273,8 @@ public class Analysis {
 				// calculateAveragePerRow2(matrixRowList, "sorted_average",
 				// proxCard, dateList);
 				// }
+				// calculateAveragePerRow2(matrixRowList, "sorted_average_10",
+				// proxCard, dateList);
 				if (iterator.hasNext()) {
 					printWriter.println(",");
 				}
